@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime
 
@@ -99,7 +98,6 @@ class TestComparisonAPI:
 
     def test_comparison_with_aemet_data(self, client: TestClient, db_session):
         from app.db.models import Medicion, Estacion, FuenteDato
-        from datetime import datetime
         est = db_session.query(Estacion).first()
         fuente = db_session.query(FuenteDato).filter(FuenteDato.codigo == "aemet").first()
         med = Medicion(estacion_id=est.id, fecha=datetime.now(), temperatura=22.0, humedad=50.0, viento=10.0, lluvia=0.0, fuente_id=fuente.id)
@@ -119,7 +117,6 @@ class TestComparisonAPI:
 
     def test_comparison_discrepancy_detected(self, client: TestClient, db_session):
         from app.db.models import Medicion, Estacion, FuenteDato
-        from datetime import datetime
         est = db_session.query(Estacion).first()
         fuente = db_session.query(FuenteDato).filter(FuenteDato.codigo == "aemet").first()
         med = Medicion(estacion_id=est.id, fecha=datetime.now(), temperatura=20.0, humedad=50.0, viento=10.0, lluvia=0.0, fuente_id=fuente.id)

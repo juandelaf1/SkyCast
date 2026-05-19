@@ -98,7 +98,8 @@ def db_session():
 
 @pytest.fixture(scope="function")
 def test_user(db_session):
-    import hashlib, secrets
+    import hashlib
+    import secrets
     salt = secrets.token_hex(16)
     pw_hash = hashlib.sha256(salt.encode() + b"Test1234").hexdigest()
     user = Usuario(email="test@skycast.com", password_hash=pw_hash, password_salt=salt)

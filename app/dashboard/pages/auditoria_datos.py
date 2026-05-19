@@ -34,7 +34,7 @@ def render():
     with col_f2:
         selected_fuente = st.multiselect("Fuente", df["fuente"].unique(), default=df["fuente"].unique())
     with col_f3:
-        fecha_range = st.date_input("Rango de fechas", value=(base.date(), datetime.now().date()))
+        _fecha_range = st.date_input("Rango de fechas", value=(base.date(), datetime.now().date()))
 
     df_filtered = df[df["municipio"].isin(selected_muni) & df["fuente"].isin(selected_fuente)]
 

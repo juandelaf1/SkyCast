@@ -1,4 +1,3 @@
-import pytest
 import pandas as pd
 import numpy as np
 from app.etl.anomaly_detector import AnomalyDetector

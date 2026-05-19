@@ -1,5 +1,4 @@
 import streamlit as st
-import httpx
 from datetime import datetime
 
 st.set_page_config(

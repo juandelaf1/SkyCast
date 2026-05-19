@@ -2,8 +2,7 @@ import streamlit as st
 import httpx
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 
@@ -18,7 +17,7 @@ def fetch_weather_data(lat: Optional[float], lon: Optional[float], city: Optiona
         else:
             params = {"lat": 40.4168, "lon": -3.7038}
 
-        resp = httpx.get(f"http://localhost:8000/api/v1/clima", params=params, headers={"Authorization": f"Bearer {token}"}, timeout=10.0)
+        resp = httpx.get("http://localhost:8000/api/v1/clima", params=params, headers={"Authorization": f"Bearer {token}"}, timeout=10.0)
         if resp.status_code == 200:
             return resp.json()
     except Exception:
@@ -65,7 +64,7 @@ def render():
         return
 
     data = fetch_weather_data(40.4168, -3.7038, None, token)
-    stats = fetch_stats(token)
+    _stats = fetch_stats(token)
 
     if not data or data.get("status") != "ok":
         st.warning("No se pudieron cargar los datos. Verifica que la API esté corriendo.")
@@ -111,8 +110,8 @@ def render():
 
     st.subheader("📈 Tendencia de Temperatura (Datos Simulados)")
     dates = pd.date_range(end=datetime.now(), periods=14, freq="D")
-    temp_data = [20 + i * 0.5 + (hash(str(d)) % 10 - 5) * 0.3 for d in dates]
-    hum_data = [50 + i * 0.2 + (hash(str(d)) % 10 - 5) for d in dates]
+    temp_data = [20 + idx * 0.5 + (hash(str(d)) % 10 - 5) * 0.3 for idx, d in enumerate(dates)]
+    hum_data = [50 + idx * 0.2 + (hash(str(d)) % 10 - 5) for idx, d in enumerate(dates)]
 
     df_trend = pd.DataFrame({"Fecha": dates, "Temperatura": temp_data, "Humedad": hum_data})
     df_trend["SMA_7"] = calculate_sma(df_trend["Temperatura"], 7)

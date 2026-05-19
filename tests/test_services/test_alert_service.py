@@ -1,4 +1,3 @@
-import pytest
 from app.services.alert_service import AlertService
 
 
@@ -53,7 +52,7 @@ class TestAlertService:
 
     def test_nivel_maximo_naranja(self):
         data = {"temperatura": 36.0, "viento": 55.0}
-        alertas = self.service.get_alertas_activas(data)
+        _alertas = self.service.get_alertas_activas(data)
         assert self.service.get_nivel_maximo(data) == "naranja"
 
     def test_datos_none_no_crash(self):

@@ -1,4 +1,3 @@
-import pytest
 from app.services.aemet_service import AemetService
 
 

@@ -17,7 +17,7 @@ def fetch_aemet_data(db: Session):
     try:
         logger.info("Scheduler: Fetching AEMET data...")
         aemet = AemetService()
-        alerts = AlertService()
+        _alerts = AlertService()
 
         estaciones = db.query(Estacion).filter(
             Estacion.municipio_id.isnot(None)

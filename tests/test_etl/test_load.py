@@ -1,4 +1,3 @@
-import pytest
 import pandas as pd
 from datetime import datetime
 from app.etl.load import load_data, pd_to_datetime, run_pipeline
@@ -73,7 +72,6 @@ class TestLoad:
         assert result["extracted"] == 0
 
     def test_run_pipeline_empty_file(self, db_session, tmp_path):
-        import json
         f = tmp_path / "empty.json"
         f.write_text("[]")
         result = run_pipeline(str(f), db_session)

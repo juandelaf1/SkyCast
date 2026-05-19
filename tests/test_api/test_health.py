@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 
@@ -30,8 +29,6 @@ class TestHealthAPI:
         assert "datos" in data
 
     def test_stats_todays_records(self, client: TestClient):
-        from datetime import datetime
-        from app.db.models import Medicion
         resp = client.get(self.STATS_URL)
         assert resp.status_code == 200
         data = resp.json()

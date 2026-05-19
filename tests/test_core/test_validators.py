@@ -1,5 +1,4 @@
-import pytest
-from datetime import datetime, date
+from datetime import date
 from app.core.validators import validar_registro
 
 

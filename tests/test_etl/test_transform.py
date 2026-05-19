@@ -1,4 +1,3 @@
-import pytest
 import pandas as pd
 from app.etl.transform import transform_data, normalize_zone_name
 from datetime import date

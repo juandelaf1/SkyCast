@@ -4,7 +4,6 @@ import geopandas
 import folium
 import plotly.express as px
 from streamlit_folium import st_folium
-from datetime import datetime
 
 
 @st.cache_data
