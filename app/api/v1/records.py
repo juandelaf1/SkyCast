@@ -35,7 +35,7 @@ class RecordResponse(BaseModel):
     viento: Optional[float]
     lluvia: Optional[float]
     presion: Optional[float]
-    fuente: str
+    fuente: str = "manual"
 
 
 @router.get("", response_model=list[RecordResponse])
@@ -54,7 +54,21 @@ def get_records(
         except ValueError:
             pass
     query = query.order_by(Medicion.fecha.desc()).limit(limit)
-    return query.all()
+    records = query.all()
+    result = []
+    for med in records:
+        result.append(RecordResponse(
+            id=med.id,
+            estacion_id=med.estacion_id,
+            fecha=med.fecha,
+            temperatura=float(med.temperatura) if med.temperatura else None,
+            humedad=float(med.humedad) if med.humedad else None,
+            viento=float(med.viento) if med.viento else None,
+            lluvia=float(med.lluvia) if med.lluvia else None,
+            presion=float(med.presion) if med.presion else None,
+            fuente=med.fuente.codigo if med.fuente else "manual",
+        ))
+    return result
 
 
 @router.post("", response_model=RecordResponse)

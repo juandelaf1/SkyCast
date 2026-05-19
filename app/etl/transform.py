@@ -36,12 +36,14 @@ def transform_data(raw_data: list[dict]) -> pd.DataFrame:
         df["alertas"] = df["alertas"].apply(lambda x: x if isinstance(x, list) else [])
 
     before = len(df)
-    df = df.drop_duplicates(subset=["fecha", "municipio"], keep="last")
+    dup_cols = [c for c in ["fecha", "municipio"] if c in df.columns]
+    if dup_cols:
+        df = df.drop_duplicates(subset=dup_cols, keep="last")
     after = len(df)
     logger.info(f"Duplicados eliminados: {before - after}")
 
     if "fecha" in df.columns:
-        df = df[df["fecha"].dt.date <= date.today()]
+        df = df[df["fecha"].notna() & (df["fecha"].dt.date <= date.today())]
 
     logger.info(f"Transformación completada: {len(df)} registros limpios")
     return df
