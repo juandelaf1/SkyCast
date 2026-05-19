@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     AEMET_API_KEY: str = ""
     OPENWEATHER_API_KEY: str = ""
+    REDIS_URL: str = ""
     SECRET_KEY: str = "clave-temporal-cambiar-en-produccion"
     DATABASE_URL: str = "sqlite:///skycast.db"
     LOG_LEVEL: str = "INFO"
