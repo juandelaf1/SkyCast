@@ -14,6 +14,18 @@ Plataforma de monitorización climática en tiempo real para España. Integra da
 [![Tests](https://img.shields.io/badge/Tests-24%20passing-brightgreen)](https://pytest.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
+## 🧬 Evolución del Proyecto
+
+Este repositorio es la culminación de un recorrido de 4 fases. Cada proyecto anterior representa un hito de aprendizaje:
+
+| Fase | Proyecto | Stack | Lección clave |
+|------|----------|-------|---------------|
+| 🟢 F1 | [SkyCast V1](https://github.com/juandelaf1/SkyCast-V1) | Streamlit + CSV | Prototipo, validación modular, SHA-256 |
+| 🔵 F2 | [ClimApp](https://github.com/juandelaf1/ClimApp) | Flask MVC + AEMET | Arquitectura por capas, 66 tests, Haversine |
+| 🟣 F3 | [Vortex](https://github.com/juandelaf1/Vortex) | FastAPI/Flask + PostgreSQL | Pipeline ETL, data lineage, trazabilidad |
+| 🟠 F4-Pre | [SkyCast V2 Pre](https://github.com/juandelaf1/SkyCast-V2-Pre) | FastAPI + Streamlit + Docker | JWT con salt, anomalías, analytics |
+| 🟢 **F4** | **SkyCast (este repo)** | **FastAPI + Streamlit + PostgreSQL + Docker** | **Consolidación Enterprise** |
+
 ---
 
 ## 🎯 Funcionalidades Principales
@@ -54,7 +66,7 @@ Plataforma de monitorización climática en tiempo real para España. Integra da
 ```bash
 # Clonar el repositorio
 git clone https://github.com/juandelaf1/SkyCast.git
-cd SkyCast-Analytics
+cd SkyCast
 
 # Crear entorno virtual
 python -m venv .venv
