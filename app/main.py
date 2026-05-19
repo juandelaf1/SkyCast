@@ -8,6 +8,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.router import router as api_v1
+from app.api.ws import router as ws_router
 from app.db import init_db
 
 
@@ -56,6 +57,7 @@ async def root():
 
 
 app.include_router(api_v1, prefix="/api/v1")
+app.include_router(ws_router)
 
 
 @app.exception_handler(Exception)
