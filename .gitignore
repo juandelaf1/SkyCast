@@ -26,3 +26,6 @@ static/
 templates/
 legacy/
 __pypackages__/
+# Agent context files
+SKYCAST_*.md
+SCRIPTS_*.md
