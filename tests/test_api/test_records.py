@@ -7,7 +7,11 @@ class TestRecordsAPI:
     def test_get_records_empty(self, client: TestClient):
         resp = client.get(self.URL)
         assert resp.status_code == 200
-        assert resp.json() == []
+        data = resp.json()
+        assert data["items"] == []
+        assert data["total"] == 0
+        assert data["page"] == 1
+        assert data["pages"] == 1
 
     def test_create_record_success(self, client: TestClient):
         resp = client.post(self.URL, json={
@@ -62,7 +66,7 @@ class TestRecordsAPI:
         })
         resp = client.get(self.URL, params={"fecha": fecha})
         assert resp.status_code == 200
-        assert len(resp.json()) >= 1
+        assert len(resp.json()["items"]) >= 1
 
     def test_get_records_limit(self, client: TestClient):
         for i in range(5):
@@ -72,7 +76,23 @@ class TestRecordsAPI:
             })
         resp = client.get(self.URL, params={"limit": 3})
         assert resp.status_code == 200
-        assert len(resp.json()) <= 3
+        data = resp.json()
+        assert len(data["items"]) <= 3
+        assert data["total"] >= 5
+
+    def test_get_records_pagination(self, client: TestClient):
+        for i in range(5):
+            client.post(self.URL, json={
+                "temperatura": float(20 + i), "humedad": 50.0, "viento": 10.0, "lluvia": 0.0,
+                "estacion_id": 1,
+            })
+        p1 = client.get(self.URL, params={"page": 1, "limit": 2}).json()
+        assert len(p1["items"]) == 2
+        assert p1["page"] == 1
+        assert p1["pages"] == 3
+        p2 = client.get(self.URL, params={"page": 2, "limit": 2}).json()
+        assert len(p2["items"]) == 2
+        assert p2["page"] == 2
 
     def test_create_record_with_date(self, client: TestClient):
         resp = client.post(self.URL, json={

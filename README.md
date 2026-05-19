@@ -11,7 +11,7 @@ Plataforma de monitorización climática en tiempo real para España. Integra da
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.42+-red?logo=streamlit)](https://streamlit.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue?logo=docker)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/Tests-24%20passing-brightgreen)](https://pytest.org/)
+[![Tests](https://img.shields.io/badge/Tests-157%20passing-brightgreen)](https://pytest.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 ## 🧬 Evolución del Proyecto

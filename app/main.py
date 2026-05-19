@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,12 +7,18 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from app.config.settings import settings
 from app.api.v1.router import router as api_v1
 from app.db import init_db
 
 
 limiter = Limiter(key_func=get_remote_address)
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    init_db()
+    yield
+
 
 app = FastAPI(
     title="SkyCast",
@@ -18,6 +26,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.state.limiter = limiter
@@ -30,11 +39,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def startup_event():
-    init_db()
 
 
 @app.get("/", tags=["root"])

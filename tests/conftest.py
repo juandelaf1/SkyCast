@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import jwt
 
 from app.db.base import Base
@@ -29,7 +29,7 @@ def _create_token(user_id: int, email: str) -> str:
     payload = {
         "sub": email,
         "user_id": user_id,
-        "exp": datetime.utcnow() + timedelta(hours=1),
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 

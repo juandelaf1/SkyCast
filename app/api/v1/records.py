@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from pydantic import BaseModel, Field
-from datetime import datetime, date
+from datetime import datetime
 from typing import Optional
 import logging
 
@@ -38,11 +38,20 @@ class RecordResponse(BaseModel):
     fuente: str = "manual"
 
 
-@router.get("", response_model=list[RecordResponse])
+class PaginatedRecords(BaseModel):
+    items: list[RecordResponse]
+    total: int
+    page: int
+    pages: int
+    limit: int
+
+
+@router.get("", response_model=PaginatedRecords)
 def get_records(
     fecha: Optional[str] = Query(None, description="YYYY-MM-DD"),
     municipio: Optional[str] = Query(None),
-    limit: int = Query(50, le=200),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(50, ge=1, le=200, description="Items per page"),
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user),
 ):
@@ -53,11 +62,15 @@ def get_records(
             query = query.filter(func.date(Medicion.fecha) == fecha_dt.date())
         except ValueError:
             pass
-    query = query.order_by(Medicion.fecha.desc()).limit(limit)
-    records = query.all()
-    result = []
+
+    total = query.count()
+    pages = max(1, (total + limit - 1) // limit)
+    offset = (page - 1) * limit
+
+    records = query.order_by(Medicion.fecha.desc()).offset(offset).limit(limit).all()
+    items = []
     for med in records:
-        result.append(RecordResponse(
+        items.append(RecordResponse(
             id=med.id,
             estacion_id=med.estacion_id,
             fecha=med.fecha,
@@ -68,7 +81,8 @@ def get_records(
             presion=float(med.presion) if med.presion else None,
             fuente=med.fuente.codigo if med.fuente else "manual",
         ))
-    return result
+
+    return PaginatedRecords(items=items, total=total, page=page, pages=pages, limit=limit)
 
 
 @router.post("", response_model=RecordResponse)
