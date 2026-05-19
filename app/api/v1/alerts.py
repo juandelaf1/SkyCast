@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-import json
 import logging
 
 from app.db.session import get_db
 from app.db.models import UmbralAlerta, Usuario
 from app.auth.jwt_auth import get_current_user
+from app.services.aemet_service import AemetService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -67,3 +67,16 @@ def create_or_update_alerta(
     db.commit()
     db.refresh(existing)
     return {"status": "ok", "umbral": existing}
+
+
+@router.get("/oficiales")
+async def get_aemet_official_alerts(
+    current_user: Usuario = Depends(get_current_user),
+):
+    aemet = AemetService()
+    alerts = await aemet.fetch_official_alerts()
+    return {
+        "fuente": "AEMET OpenData",
+        "total": len(alerts),
+        "alertas": alerts,
+    }

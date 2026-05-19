@@ -58,3 +58,12 @@ class TestAlertsAPI:
         assert umbrales[("temperatura", "naranja")] == 35.0
         assert umbrales[("viento", "rojo")] == 70.0
         assert umbrales[("humedad", "rojo")] == 90.0
+
+    def test_oficial_alerts_endpoint(self, client: TestClient):
+        resp = client.get(f"{self.URL}/oficiales")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "fuente" in data
+        assert "total" in data
+        assert "alertas" in data
+        assert data["fuente"] == "AEMET OpenData"

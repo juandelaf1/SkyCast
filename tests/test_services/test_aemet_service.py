@@ -70,3 +70,35 @@ class TestAemetService:
         result = asyncio.run(self.service.get_weather(lat=40.4168, lon=-3.7038))
         assert result["estacion_nombre"] == "Madrid-Retiro"
         assert result["data"]["temperatura"] == 22.5
+
+    def test_fetch_official_alerts_no_key(self):
+        import asyncio
+        result = asyncio.run(self.service.fetch_official_alerts())
+        assert result == []
+
+    def test_normalize_aemet_alerts_empty(self):
+        result = self.service._normalize_aemet_alerts([])
+        assert result == []
+
+    def test_normalize_aemet_alerts_valid(self):
+        raw = [{
+            "origen": {"origen": "AEMET", "productor": "test"},
+            "datos": [{
+                "nivel": "amarillo",
+                "fenomeno": "Lluvias",
+                "area": "Madrid",
+                "descripcion": "Precipitación acumulada 40mm",
+                "fecha_inicio": "2026-05-20T00:00:00",
+                "fecha_fin": "2026-05-20T23:59:00",
+            }]
+        }]
+        result = self.service._normalize_aemet_alerts(raw)
+        assert len(result) == 1
+        assert result[0]["nivel"] == "amarillo"
+        assert result[0]["fenomeno"] == "Lluvias"
+        assert result[0]["area"] == "Madrid"
+        assert result[0]["fuente"] == "AEMET"
+
+    def test_normalize_aemet_alerts_non_list(self):
+        result = self.service._normalize_aemet_alerts({})
+        assert result == []

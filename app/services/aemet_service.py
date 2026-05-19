@@ -156,6 +156,46 @@ class AemetService:
         except (ValueError, AttributeError):
             return None
 
+    async def fetch_official_alerts(self) -> list[dict]:
+        if not self.api_key:
+            return []
+        try:
+            url = f"{self.base_url}/avisos/tiempo/hoy"
+            headers = {"api_key": self.api_key}
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                resp = await client.get(url, headers=headers)
+                if resp.status_code != 200:
+                    return []
+                data = resp.json()
+                if isinstance(data, dict) and data.get("datos"):
+                    datos_url = data["datos"]
+                    resp2 = await client.get(datos_url)
+                    if resp2.status_code == 200:
+                        alerts = resp2.json()
+                        return self._normalize_aemet_alerts(alerts)
+                return []
+        except Exception as e:
+            logger.error(f"Error fetching AEMET alerts: {e}")
+            return []
+
+    def _normalize_aemet_alerts(self, raw: list) -> list[dict]:
+        result = []
+        for item in raw if isinstance(raw, list) else []:
+            origen = item.get("origen", {})
+            datos = item.get("datos", [])
+            for alert in datos if isinstance(datos, list) else []:
+                result.append({
+                    "fuente": "AEMET",
+                    "organismo": origen.get("origen", "AEMET"),
+                    "nivel": alert.get("nivel", "").lower(),
+                    "fenomeno": alert.get("fenomeno", ""),
+                    "area": alert.get("area", ""),
+                    "descripcion": alert.get("descripcion", ""),
+                    "fecha_inicio": alert.get("fecha_inicio", ""),
+                    "fecha_fin": alert.get("fecha_fin", ""),
+                })
+        return result
+
     def _get_fallback_data(self, lat: float, lon: float, city: str) -> dict:
         return {
             "estacion_id": 1,
