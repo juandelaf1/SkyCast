@@ -15,26 +15,28 @@ class AemetService:
     async def get_weather(
         self, lat: Optional[float] = None, lon: Optional[float] = None, city: Optional[str] = None
     ) -> Optional[dict]:
-        if not self.api_key:
-            return self._get_fallback_data(lat, lon, city)
+        if self.api_key:
+            try:
+                estacion = await self._find_nearest_station(lat, lon)
+                if estacion:
+                    datos = await self._fetch_station_data(estacion["indicativo"])
+                    if datos:
+                        return {
+                            "estacion_id": estacion["id"],
+                            "estacion_nombre": estacion["nombre"],
+                            "distancia_km": estacion["distancia_km"],
+                            "data": datos,
+                        }
+            except Exception as e:
+                logger.error(f"Error AEMET: {e}")
 
-        try:
-            estacion = await self._find_nearest_station(lat, lon)
-            if not estacion:
-                return self._get_fallback_data(lat, lon, city)
+        from app.services.openweather_service import OpenWeatherService
+        ow = OpenWeatherService()
+        ow_result = await ow.get_weather(lat=lat, lon=lon, city=city)
+        if ow_result:
+            return ow_result
 
-            datos = await self._fetch_station_data(estacion["indicativo"])
-            if datos:
-                return {
-                    "estacion_id": estacion["id"],
-                    "estacion_nombre": estacion["nombre"],
-                    "distancia_km": estacion["distancia_km"],
-                    "data": datos,
-                }
-            return self._get_fallback_data(lat, lon, city)
-        except Exception as e:
-            logger.error(f"Error AEMET: {e}")
-            return self._get_fallback_data(lat, lon, city)
+        return self._get_fallback_data(lat, lon, city)
 
     async def _find_nearest_station(self, lat: float, lon: float) -> Optional[dict]:
         try:

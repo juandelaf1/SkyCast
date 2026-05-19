@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 import logging
-from typing import Optional
 
 from app.db.models import Medicion, Estacion, FuenteDato
 
@@ -104,3 +103,52 @@ def run_pipeline(data_path: str, db: Session, source_code: str = "etl") -> dict:
     result["loaded"] = loaded
 
     return result
+
+
+def run_pipeline_with_lineage(data_path: str, db: Session, source_code: str = "etl") -> dict:
+    from app.core.lineage import LineageLogger
+    from app.etl.extract import extract_data
+    from app.etl.transform import transform_data
+
+    lineage = LineageLogger(source=source_code)
+
+    raw = extract_data(data_path)
+    if not raw:
+        lineage.log_extract(0, details="No data extracted from source")
+        return {"lineage": lineage.summary(), "error": "No data extracted"}
+
+    rows_extracted = len(raw)
+    lineage.log_extract(rows_extracted, details=f"Extracted {rows_extracted} records from {data_path}")
+
+    df = transform_data(raw)
+    rows_before_transform = len(raw)
+    rows_after_transform = len(df)
+    rows_discarded = rows_before_transform - rows_after_transform
+    lineage.log_transform(
+        rows_in=rows_before_transform,
+        rows_out=rows_after_transform,
+        rows_discarded=rows_discarded,
+        details=f"Transformed: {rows_discarded} rows discarded (duplicates, nulls, invalid)",
+    )
+
+    if df.empty:
+        lineage.log_load(rows_in=0, rows_loaded=0, details="No rows to load after transform")
+        return {"lineage": lineage.summary(), "error": "No data after transform"}
+
+    loaded = load_data(df, db, source_code)
+    duplicates = rows_after_transform - loaded
+    lineage.log_load(
+        rows_in=rows_after_transform,
+        rows_loaded=loaded,
+        rows_duplicates=duplicates,
+        details=f"Loaded {loaded} rows ({duplicates} duplicates skipped)",
+    )
+
+    return {
+        "lineage": lineage.summary(),
+        "extracted": rows_extracted,
+        "transformed": rows_after_transform,
+        "loaded": loaded,
+        "discarded": rows_discarded,
+        "duplicates": duplicates,
+    }

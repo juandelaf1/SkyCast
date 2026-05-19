@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     AEMET_API_KEY: str = ""
+    OPENWEATHER_API_KEY: str = ""
     SECRET_KEY: str = "clave-temporal-cambiar-en-produccion"
     DATABASE_URL: str = "sqlite:///skycast.db"
     LOG_LEVEL: str = "INFO"
@@ -27,6 +28,7 @@ class Settings(BaseSettings):
     IP_API_URL: str = "http://ip-api.com/json"
     NOMINATIM_URL: str = "https://nominatim.openstreetmap.org"
     AEMET_BASE_URL: str = "https://opendata.aemet.es/opendata/api"
+    OPENWEATHER_BASE_URL: str = "https://api.openweathermap.org/data/2.5"
 
     ALERT_TEMP_EXTREME: float = 40.0
     ALERT_TEMP_HIGH: float = 35.0
