@@ -24,6 +24,8 @@ class RecordCreate(BaseModel):
     presion: Optional[float] = Field(None, ge=800, le=1200)
     estacion_id: int
     municipio: Optional[str] = None
+    lat: Optional[float] = Field(None, ge=-90, le=90, description="Latitud del reporte (geovalidación)")
+    lon: Optional[float] = Field(None, ge=-180, le=180, description="Longitud del reporte (geovalidación)")
 
 
 class RecordResponse(BaseModel):
@@ -98,6 +100,15 @@ def create_record(
     estacion = db.query(Estacion).filter(Estacion.id == record.estacion_id).first()
     if not estacion:
         raise HTTPException(status_code=404, detail="Estación no encontrada")
+
+    if record.lat is not None and record.lon is not None:
+        from app.core.utils import haversine
+        dist = haversine(float(estacion.lat), float(estacion.lon), record.lat, record.lon)
+        if dist > 10.0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Geovalidación: tu ubicación está a {dist:.1f} km de la estación (máx 10 km)",
+            )
 
     fuente = db.query(FuenteDato).filter(FuenteDato.codigo == "manual").first()
 

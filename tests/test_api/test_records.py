@@ -104,3 +104,28 @@ class TestRecordsAPI:
             "fecha": "2026-05-01",
         })
         assert resp.status_code == 200
+
+    def test_create_record_geovalidacion_passes(self, client: TestClient):
+        resp = client.post(self.URL, json={
+            "temperatura": 22.0,
+            "humedad": 50.0,
+            "viento": 10.0,
+            "lluvia": 0.0,
+            "estacion_id": 1,
+            "lat": 40.4114,
+            "lon": -3.6788,
+        })
+        assert resp.status_code == 200
+
+    def test_create_record_geovalidacion_fails(self, client: TestClient):
+        resp = client.post(self.URL, json={
+            "temperatura": 22.0,
+            "humedad": 50.0,
+            "viento": 10.0,
+            "lluvia": 0.0,
+            "estacion_id": 1,
+            "lat": 28.0,
+            "lon": -16.0,
+        })
+        assert resp.status_code == 400
+        assert "Geovalidación" in resp.json()["detail"]
