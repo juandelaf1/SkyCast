@@ -17,7 +17,7 @@ class GeoResponse(BaseModel):
     lat: float
     lon: float
     provincia: Optional[str] = None
-    pais: Optional[str] = "España"
+    pais: Optional[str] = None
     fuente: str
 
 

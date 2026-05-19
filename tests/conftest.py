@@ -65,6 +65,7 @@ def _seed_data(db):
 
     fuentes_data = [
         {"codigo": "aemet", "nombre": "AEMET OpenData", "url": "https://opendata.aemet.es", "cobertura": "España"},
+        {"codigo": "openweather", "nombre": "OpenWeatherMap", "url": "https://api.openweathermap.org", "cobertura": "Global"},
         {"codigo": "manual", "nombre": "Registro Manual", "url": None, "cobertura": "Usuario"},
     ]
     for f in fuentes_data:

@@ -18,7 +18,7 @@ class GeolocationService:
             return self._cache[cache_key]
 
         try:
-            params = {"q": city, "format": "json", "limit": 1, "countrycodes": "es"}
+            params = {"q": city, "format": "json", "limit": 1}
             headers = {"User-Agent": "SkyCast-Climate/1.0"}
 
             async with httpx.AsyncClient(timeout=10) as client:
@@ -31,8 +31,8 @@ class GeolocationService:
                 lon = float(data.get("lon", 0))
 
                 address = data.get("address", {})
-                provincia = address.get("state", "Madrid")
-                pais = address.get("country_code", "es").upper()
+                provincia = address.get("state") or address.get("region", "")
+                pais = address.get("country_code", "").upper()
 
                 result = {
                     "ciudad": city,
@@ -60,16 +60,16 @@ class GeolocationService:
                     result = {
                         "lat": data.get("lat"),
                         "lon": data.get("lon"),
-                        "ciudad": data.get("city", "Madrid"),
-                        "provincia": data.get("regionName", "Madrid"),
-                        "pais": data.get("countryCode", "ES"),
+                        "ciudad": data.get("city", ""),
+                        "provincia": data.get("regionName", ""),
+                        "pais": data.get("countryCode", ""),
                         "fuente": "ip-api",
                     }
                     self._cache["ip"] = result
                     return result
         except Exception as e:
             logger.error(f"Error IP geolocation: {e}")
-        return {"lat": 40.4168, "lon": -3.7038, "ciudad": "Madrid", "provincia": "Madrid", "pais": "ES", "fuente": "default"}
+        return {"lat": 40.4168, "lon": -3.7038, "ciudad": "Unknown", "provincia": "", "pais": "", "fuente": "default"}
 
     async def reverse_geocode(self, lat: float, lon: float) -> Optional[dict]:
         try:
@@ -84,10 +84,10 @@ class GeolocationService:
                 data = resp.json()
                 address = data.get("address", {})
                 return {
-                    "ciudad": address.get("city") or address.get("town") or address.get("village", "Desconocido"),
-                    "provincia": address.get("state", "Madrid"),
+                    "ciudad": address.get("city") or address.get("town") or address.get("village", "Unknown"),
+                    "provincia": address.get("state", ""),
                     "codigo_postal": address.get("postcode"),
-                    "pais": address.get("country_code", "es").upper(),
+                    "pais": address.get("country_code", "").upper(),
                 }
         except Exception as e:
             logger.error(f"Error reverse geocoding: {e}")

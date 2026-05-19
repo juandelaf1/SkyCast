@@ -12,10 +12,16 @@ class AemetService:
         self.api_key = settings.AEMET_API_KEY
         self.timeout = settings.AEMET_TIMEOUT
 
+    @staticmethod
+    def _is_spain(lat: Optional[float], lon: Optional[float]) -> bool:
+        if lat is None or lon is None:
+            return False
+        return 27.0 < lat < 44.0 and -19.0 < lon < 5.0
+
     async def get_weather(
         self, lat: Optional[float] = None, lon: Optional[float] = None, city: Optional[str] = None
     ) -> Optional[dict]:
-        if self.api_key:
+        if self.api_key and self._is_spain(lat, lon):
             try:
                 estacion = await self._find_nearest_station(lat, lon)
                 if estacion:
@@ -26,6 +32,7 @@ class AemetService:
                             "estacion_nombre": estacion["nombre"],
                             "distancia_km": estacion["distancia_km"],
                             "data": datos,
+                            "proveedor": "AEMET",
                         }
             except Exception as e:
                 logger.error(f"Error AEMET: {e}")
@@ -34,6 +41,7 @@ class AemetService:
         ow = OpenWeatherService()
         ow_result = await ow.get_weather(lat=lat, lon=lon, city=city)
         if ow_result:
+            ow_result["proveedor"] = "OpenWeatherMap"
             return ow_result
 
         return self._get_fallback_data(lat, lon, city)

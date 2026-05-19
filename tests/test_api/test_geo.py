@@ -20,4 +20,3 @@ class TestGeoAPI:
             assert "lat" in data
             assert "lon" in data
             assert "fuente" in data
-            assert data["pais"] in ("ES", "España")

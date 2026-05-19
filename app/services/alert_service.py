@@ -1,5 +1,4 @@
 from typing import Optional
-from app.config.settings import settings
 
 
 class AlertService:
