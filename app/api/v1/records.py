@@ -9,7 +9,6 @@ import logging
 from app.db.session import get_db
 from app.db.models import Medicion, Estacion, FuenteDato, Usuario
 from app.auth.jwt_auth import get_current_user
-from app.core.utils import haversine
 from app.core.validators import validar_registro
 
 router = APIRouter()

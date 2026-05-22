@@ -9,7 +9,6 @@ from passlib.hash import pbkdf2_sha256
 from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from sqlalchemy.orm import Session
 
-from app.auth.jwt_auth import get_current_user
 from app.config.settings import settings
 from app.db.models import Usuario
 from app.db.session import get_db
