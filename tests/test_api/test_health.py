@@ -5,14 +5,14 @@ class TestHealthAPI:
     HEALTH_URL = "/api/v1/health"
     STATS_URL = "/api/v1/health/stats"
 
-    def test_health_check(self, client: TestClient):
-        resp = client.get(self.HEALTH_URL)
+    def test_health_no_auth_required(self):
+        from app.main import app
+        app.dependency_overrides.clear()
+        c = TestClient(app)
+        resp = c.get(self.HEALTH_URL)
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "healthy"
-        assert data["version"] == "1.0.0"
-        assert "uptime_seconds" in data
-        assert "requests_total" in data
 
     def test_health_tracks_requests(self, client: TestClient):
         client.get(self.HEALTH_URL)

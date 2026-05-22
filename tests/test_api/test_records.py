@@ -129,3 +129,65 @@ class TestRecordsAPI:
         })
         assert resp.status_code == 400
         assert "Geovalidación" in resp.json()["detail"]
+
+    def test_get_records_invalid_fecha_format(self, client: TestClient):
+        resp = client.get(self.URL, params={"fecha": "not-a-date"})
+        assert resp.status_code == 400
+        assert "YYYY-MM-DD" in resp.json()["detail"]
+
+    def test_create_record_invalid_fecha_format(self, client: TestClient):
+        resp = client.post(self.URL, json={
+            "temperatura": 22.0, "humedad": 50.0, "viento": 10.0, "lluvia": 0.0,
+            "estacion_id": 1, "fecha": "invalida",
+        })
+        assert resp.status_code == 400
+        assert "YYYY-MM-DD" in str(resp.json()["detail"])
+
+    def test_get_records_page_beyond_available(self, client: TestClient):
+        resp = client.get(self.URL, params={"page": 999, "limit": 50})
+        assert resp.status_code == 200
+        assert resp.json()["items"] == []
+
+    def test_get_records_invalid_page(self, client: TestClient):
+        resp = client.get(self.URL, params={"page": 0})
+        assert resp.status_code == 422
+
+    def test_create_record_presion_out_of_range(self, client: TestClient):
+        resp = client.post(self.URL, json={
+            "temperatura": 22.0, "humedad": 50.0, "viento": 10.0, "lluvia": 0.0,
+            "estacion_id": 1, "presion": 2000.0,
+        })
+        assert resp.status_code == 422
+
+    def test_get_records_filter_by_municipio(self, client: TestClient):
+        client.post(self.URL, json={
+            "temperatura": 22.0, "humedad": 50.0, "viento": 10.0, "lluvia": 0.0,
+            "estacion_id": 1,
+        })
+        resp = client.get(self.URL, params={"municipio": "Madrid"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["total"] >= 1
+
+
+class TestRecordsAPIAuth:
+    URL = "/api/v1/registros"
+
+    def test_get_records_no_auth(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        app.dependency_overrides.clear()
+        c = TestClient(app)
+        resp = c.get(self.URL)
+        assert resp.status_code == 401
+
+    def test_create_record_no_auth(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        app.dependency_overrides.clear()
+        c = TestClient(app)
+        resp = c.post(self.URL, json={
+            "temperatura": 22.0, "humedad": 50.0, "viento": 10.0, "lluvia": 0.0,
+            "estacion_id": 1,
+        })
+        assert resp.status_code == 401

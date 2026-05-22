@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, Request, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
@@ -39,7 +39,6 @@ async def get_clima(
     lat: Optional[float] = Query(None, ge=-90, le=90),
     lon: Optional[float] = Query(None, ge=-180, le=180),
     ciudad: Optional[str] = Query(None, min_length=1),
-    request: Request = None,
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user),
 ):

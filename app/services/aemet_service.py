@@ -1,7 +1,9 @@
 import httpx
 import logging
 from typing import Optional
+
 from app.config.settings import settings
+from app.core.utils import haversine
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ class AemetService:
             ow_result["proveedor"] = "OpenWeatherMap"
             return ow_result
 
-        return self._get_fallback_data(lat, lon, city)
+        return None
 
     async def _find_nearest_station(self, lat: float, lon: float) -> Optional[dict]:
         try:
@@ -73,7 +75,6 @@ class AemetService:
             if not estaciones:
                 return None
 
-            from app.core.utils import haversine
             nearest = None
             min_dist = float("inf")
 
@@ -85,7 +86,7 @@ class AemetService:
                     if dist < min_dist:
                         min_dist = dist
                         nearest = {
-                            "id": 1,
+                            "id": None,
                             "indicativo": est.get("indicativo", ""),
                             "nombre": est.get("nombre", ""),
                             "lat": est_lat,
@@ -204,18 +205,5 @@ class AemetService:
                 })
         return result
 
-    def _get_fallback_data(self, lat: float, lon: float, city: str) -> dict:
-        return {
-            "estacion_id": 1,
-            "estacion_nombre": "Madrid-Retiro",
-            "distancia_km": 2.5,
-            "data": {
-                "temperatura": 22.5,
-                "humedad": 55.0,
-                "viento": 12.0,
-                "lluvia": 0.0,
-                "presion": 1013.0,
-                "municipio": city or "Madrid",
-                "provincia": "Madrid",
-            },
-        }
+    def _get_fallback_data(self, lat: float, lon: float, city: str) -> Optional[dict]:
+        return None

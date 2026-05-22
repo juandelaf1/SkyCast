@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 class TestGeoAPI:
     URL = "/api/v1/geo"
 
-    def test_geo_endpoint_requires_auth(self, client: TestClient):
+    def test_geo_endpoint_requires_auth(self):
         from app.main import app
         app.dependency_overrides.clear()
         c = TestClient(app)
@@ -13,10 +13,14 @@ class TestGeoAPI:
 
     def test_geo_endpoint_structure(self, client: TestClient):
         resp = client.get(f"{self.URL}/Madrid")
-        assert resp.status_code in (200, 404, 500)
+        assert resp.status_code in (200, 404)
         if resp.status_code == 200:
             data = resp.json()
             assert "ciudad" in data
             assert "lat" in data
             assert "lon" in data
             assert "fuente" in data
+
+    def test_geo_invalid_characters(self, client: TestClient):
+        resp = client.get(f"{self.URL}/<script>alert(1)</script>")
+        assert resp.status_code in (400, 404, 500)

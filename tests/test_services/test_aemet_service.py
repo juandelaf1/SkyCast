@@ -56,20 +56,17 @@ class TestAemetService:
 
     def test_get_fallback_data(self):
         result = self.service._get_fallback_data(40.4168, -3.7038, "Madrid")
-        assert result["estacion_nombre"] == "Madrid-Retiro"
-        assert result["data"]["temperatura"] == 22.5
-        assert result["data"]["municipio"] == "Madrid"
-        assert result["data"]["provincia"] == "Madrid"
+        assert result is None
 
     def test_get_fallback_data_no_city(self):
         result = self.service._get_fallback_data(40.4168, -3.7038, None)
-        assert result["data"]["municipio"] == "Madrid"
+        assert result is None
 
-    def test_get_weather_no_api_key_sync(self):
+    def test_get_weather_fallback_openweather(self):
         import asyncio
         result = asyncio.run(self.service.get_weather(lat=40.4168, lon=-3.7038))
-        assert result["estacion_nombre"] == "Madrid-Retiro"
-        assert result["data"]["temperatura"] == 22.5
+        assert result is not None
+        assert result.get("proveedor") == "OpenWeatherMap"
 
     def test_fetch_official_alerts_no_key(self):
         import asyncio

@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
 import time
 import logging
 
@@ -41,9 +40,7 @@ class StatsResponse(BaseModel):
 
 
 @router.get("", response_model=HealthResponse)
-async def health_check(
-    current_user: Usuario = Depends(get_current_user),
-):
+async def health_check():
     _increment("/health")
     return HealthResponse(
         timestamp=datetime.now().isoformat(),

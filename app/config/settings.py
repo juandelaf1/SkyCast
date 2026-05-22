@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = ""
     SECRET_KEY: str = "clave-temporal-cambiar-en-produccion"
     DATABASE_URL: str = "sqlite:///skycast.db"
+    API_BASE: str = "http://localhost:8000"
     LOG_LEVEL: str = "INFO"
 
     AEMET_TIMEOUT: int = 20

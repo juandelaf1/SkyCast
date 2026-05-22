@@ -1,26 +1,22 @@
+import logging
+import re
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
-from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
-import secrets
-import hashlib
-import re
-import logging
+from passlib.hash import pbkdf2_sha256
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
+from sqlalchemy.orm import Session
 
-from app.db.session import get_db
-from app.db.models import Usuario
+from app.auth.jwt_auth import get_current_user
 from app.config.settings import settings
+from app.db.models import Usuario
+from app.db.session import get_db
 
-router = APIRouter()
 logger = logging.getLogger(__name__)
-
+router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-
-def _hash_password(password: str, salt: str) -> str:
-    return hashlib.sha256(salt.encode() + password.encode()).hexdigest()
 
 
 def _validate_password(password: str) -> tuple[bool, str]:
@@ -85,13 +81,12 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=409, detail="El email ya está registrado")
 
-    salt = secrets.token_hex(16)
-    password_hash = _hash_password(user_data.password, salt)
+    password_hash = pbkdf2_sha256.hash(user_data.password)
 
     user = Usuario(
         email=user_data.email,
         password_hash=password_hash,
-        password_salt=salt,
+        password_salt=None,
     )
     db.add(user)
     db.commit()
@@ -118,8 +113,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    computed_hash = _hash_password(form_data.password, user.password_salt)
-    if computed_hash != user.password_hash:
+    if not pbkdf2_sha256.verify(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales inválidas",

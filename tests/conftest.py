@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta, timezone
 from jose import jwt
+from passlib.hash import pbkdf2_sha256
 
 from app.db.base import Base
 from app.db.session import get_db
@@ -99,11 +100,8 @@ def db_session():
 
 @pytest.fixture(scope="function")
 def test_user(db_session):
-    import hashlib
-    import secrets
-    salt = secrets.token_hex(16)
-    pw_hash = hashlib.sha256(salt.encode() + b"Test1234").hexdigest()
-    user = Usuario(email="test@skycast.com", password_hash=pw_hash, password_salt=salt)
+    pw_hash = pbkdf2_sha256.hash("Test1234")
+    user = Usuario(email="test@skycast.com", password_hash=pw_hash, password_salt=None)
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)

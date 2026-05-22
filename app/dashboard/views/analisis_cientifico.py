@@ -23,7 +23,7 @@ def calculate_std_bands(series, window=7, std_factor=2):
 def render():
     st.header("🔬 Análisis Científico")
 
-    dates = pd.date_range(start=datetime.now() - timedelta(days=30), end=datetime.now(), freq="H")
+    dates = pd.date_range(start=datetime.now() - timedelta(days=30), end=datetime.now(), freq="h")
     n = len(dates)
 
     np.random.seed(42)

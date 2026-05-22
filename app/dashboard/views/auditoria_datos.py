@@ -30,11 +30,11 @@ def render():
 
     col_f1, col_f2, col_f3 = st.columns(3)
     with col_f1:
-        selected_muni = st.multiselect("Municipio", df["municipio"].unique(), default=df["municipio"].unique())
+        selected_muni = st.multiselect("Municipio", df["municipio"].unique(), default=df["municipio"].unique(), key="audit_muni")
     with col_f2:
-        selected_fuente = st.multiselect("Fuente", df["fuente"].unique(), default=df["fuente"].unique())
+        selected_fuente = st.multiselect("Fuente", df["fuente"].unique(), default=df["fuente"].unique(), key="audit_fuente")
     with col_f3:
-        _fecha_range = st.date_input("Rango de fechas", value=(base.date(), datetime.now().date()))
+        _fecha_range = st.date_input("Rango de fechas", value=(base.date(), datetime.now().date()), key="audit_dates")
 
     df_filtered = df[df["municipio"].isin(selected_muni) & df["fuente"].isin(selected_fuente)]
 

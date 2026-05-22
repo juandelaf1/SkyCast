@@ -44,8 +44,8 @@ def render():
         st.text_input("AEMET API Key", value="••••••••••••••••", type="password", disabled=True)
         st.text_input("Timeout (segundos)", value="20", disabled=True)
     with col_b:
-        st.text_input("Estación máx. distancia (km)", value="50")
-        st.text_input("Caché TTL (minutos)", value="30")
+        st.text_input("Estacion maxima distancia (km)", value="50", key="cfg_dist_max")
+        st.text_input("Cache TTL (minutos)", value="30", key="cfg_cache_ttl")
 
     st.divider()
 
@@ -54,10 +54,10 @@ def render():
         st.success("✅ Autenticado")
         col_u1, col_u2 = st.columns(2)
         with col_u1:
-            if st.button("📋 Ver perfil", use_container_width=True):
+            if st.button("📋 Ver perfil", key="btn_perfil", use_container_width=True):
                 st.info("Funcionalidad en desarrollo")
         with col_u2:
-            if st.button("🚪 Cerrar sesión", use_container_width=True):
+            if st.button("🚪 Cerrar sesión", key="btn_logout", use_container_width=True):
                 st.session_state.clear()
                 st.rerun()
     else:

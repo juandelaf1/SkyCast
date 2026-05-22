@@ -69,11 +69,12 @@ class TestAuthAPI:
         assert data["email"] == test_user.email
         assert data["activo"] is True
 
-    def test_me_no_auth(self, client: TestClient):
+    def test_me_no_auth(self):
+        from fastapi.testclient import TestClient
         from app.main import app
         app.dependency_overrides.clear()
-        client2 = TestClient(app)
-        resp = client2.get(self.ME_URL)
+        c = TestClient(app)
+        resp = c.get(self.ME_URL)
         assert resp.status_code == 401
 
     def test_register_password_no_mayuscula(self, client: TestClient):

@@ -9,6 +9,7 @@ import logging
 from app.db.session import get_db
 from app.db.models import Medicion, Estacion, FuenteDato, Usuario
 from app.auth.jwt_auth import get_current_user
+from app.core.utils import haversine
 from app.core.validators import validar_registro
 
 router = APIRouter()
@@ -63,7 +64,7 @@ def get_records(
             fecha_dt = datetime.strptime(fecha, "%Y-%m-%d")
             query = query.filter(func.date(Medicion.fecha) == fecha_dt.date())
         except ValueError:
-            pass
+            raise HTTPException(status_code=400, detail="Fecha inválida. Formato: YYYY-MM-DD")
 
     total = query.count()
     pages = max(1, (total + limit - 1) // limit)
@@ -117,7 +118,7 @@ def create_record(
         try:
             fecha_dt = datetime.strptime(record.fecha, "%Y-%m-%d")
         except ValueError:
-            pass
+            raise HTTPException(status_code=400, detail="Fecha inválida. Formato: YYYY-MM-DD")
 
     medicion = Medicion(
         estacion_id=record.estacion_id,

@@ -6,7 +6,7 @@ from typing import Optional
 import logging
 
 from app.db.session import get_db
-from app.db.models import Medicion, Usuario
+from app.db.models import Medicion, Usuario, FuenteDato
 from app.auth.jwt_auth import get_current_user
 
 router = APIRouter()
@@ -53,11 +53,15 @@ def compare_manual_vs_aemet(
     except ValueError:
         raise HTTPException(status_code=400, detail="Fecha inválida. Formato: YYYY-MM-DD")
 
+    aemet_fuente = db.query(FuenteDato).filter(FuenteDato.codigo == "aemet").first()
+    if not aemet_fuente:
+        raise HTTPException(status_code=500, detail="Fuente AEMET no encontrada en base de datos")
+
     aemet_med = (
         db.query(Medicion)
         .filter(Medicion.fecha >= fecha_dt.replace(hour=0, minute=0, second=0))
         .filter(Medicion.fecha <= fecha_dt.replace(hour=23, minute=59, second=59))
-        .filter(Medicion.fuente_id == 1)
+        .filter(Medicion.fuente_id == aemet_fuente.id)
         .first()
     )
 

@@ -5,11 +5,13 @@ class TestOpenWeatherService:
     def setup_method(self):
         self.service = OpenWeatherService()
 
-    def test_no_api_key_returns_none(self):
+    def test_get_weather_with_key_returns_data(self):
         result = self.service.get_weather(lat=40.4168, lon=-3.7038)
         import asyncio
         result = asyncio.run(result)
-        assert result is None
+        assert result is not None
+        assert "data" in result
+        assert "temperatura" in result["data"]
 
     def test_ms_to_kmh_none(self):
         assert self.service._ms_to_kmh(None) is None

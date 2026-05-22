@@ -1,3 +1,4 @@
+import asyncio
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import logging
@@ -30,7 +31,7 @@ def fetch_aemet_data(db: Session):
 
         for est in estaciones:
             try:
-                result = aemet.get_weather(lat=float(est.lat), lon=float(est.lon))
+                result = asyncio.run(aemet.get_weather(lat=float(est.lat), lon=float(est.lon)))
                 if not result:
                     continue
 
