@@ -30,3 +30,5 @@ __pypackages__/
 SKYCAST_*.md
 SCRIPTS_*.md
 .aider*
+# Coordination file between agents - tracked
+!.COORDINATION.json

@@ -1,0 +1,50 @@
+﻿{
+    "agents":  {
+                   "opencode_1":  {
+                                      "status":  "activo",
+                                      "current_task":  "M1: Replace demo data with real API/DB data in dashboard views",
+                                      "files_touching":  [
+                                                             "app/dashboard/views/resumen_ejecutivo.py",
+                                                             "app/dashboard/views/analisis_cientifico.py",
+                                                             "app/dashboard/views/auditoria_datos.py",
+                                                             "app/dashboard/views/mapa_estaciones.py",
+                                                             "app/dashboard/views/configuracion.py"
+                                                         ],
+                                      "last_updated":  "2026-05-22 19:47:57"
+                                  },
+                   "opencode_2":  {
+                                      "status":  "inactivo",
+                                      "current_task":  "",
+                                      "files_touching":  [
+
+                                                         ],
+                                      "last_updated":  ""
+                                  }
+               },
+    "protocol":  {
+                     "version":  "1.0",
+                     "description":  "Sistema de coordinaciÃ³n entre instancias opencode en SkyCast",
+                     "rules":  [
+                                   "1. Antes de modificar un archivo, CLAIM con el script: .\\scripts\\coordinate.ps1 claim \u003ctu_id\u003e \u0027\u003ctarea\u003e\u0027 \u0027\u003carchivo1,archivo2\u003e\u0027",
+                                   "2. Si hay CONFLICT, espera o coordina con el otro agente",
+                                   "3. Al terminar, RELEASE: .\\scripts\\coordinate.ps1 release \u003ctu_id\u003e",
+                                   "4. IDs disponibles: opencode_1, opencode_2",
+                                   "5. Revisa status con: .\\scripts\\coordinate.ps1 status"
+                               ],
+                     "ids":  {
+                                 "opencode_1":  "Primera instancia (la que estaba con el agente Aider)",
+                                 "opencode_2":  "Segunda instancia (yo - opencode actual)"
+                             }
+                 },
+    "shared_notes":  [
+                         "=== AUDIT 2026-05-22 ===",
+                         "CRITICAL: AEMET encoding ISO-8859-15 en aemet_service.py (YA ARREGLADO)",
+                         "CRITICAL: Dockerfile.dashboard CMD apuntaba a app.py eliminado (YA ARREGLADO)",
+                         "CRITICAL: Aider modelo decommissionado (no tocar - config local)",
+                         "MAJOR: Dashboard con datos demo (M1) - pendiente",
+                         "MAJOR: CI PostgreSQL no usado (M2/M3) - pendiente",
+                         "MAJOR: Python 3.13 vs 3.11 Docker (YA ARREGLADO)",
+                         "MINOR: pytest-asyncio 2.0.0 (YA ARREGLADO)",
+                         "MINOR: .gitignore static/ y templates/ (YA ARREGLADO)"
+                     ]
+}

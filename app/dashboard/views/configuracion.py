@@ -1,13 +1,16 @@
 import streamlit as st
 from datetime import datetime
 
+from app.dashboard.views._api import api_get, is_authenticated
+
 
 def render():
-    st.header("⚙️ Configuración")
+    st.header("Configuracion")
 
-    token = st.session_state.get("token", "")
+    auth = is_authenticated()
+    stats = api_get("/api/v1/health/stats") if auth else None
 
-    st.subheader("🔔 Thresholds de Alertas")
+    st.subheader("Thresholds de Alertas")
     st.info("Configura los umbrales de alerta del sistema.")
 
     thresholds = [
@@ -38,10 +41,10 @@ def render():
 
     st.divider()
 
-    st.subheader("📡 Configuración de la API AEMET")
+    st.subheader("Configuracion de la API AEMET")
     col_a, col_b = st.columns(2)
     with col_a:
-        st.text_input("AEMET API Key", value="••••••••••••••••", type="password", disabled=True)
+        st.text_input("AEMET API Key", value="", type="password", disabled=True)
         st.text_input("Timeout (segundos)", value="20", disabled=True)
     with col_b:
         st.text_input("Estacion maxima distancia (km)", value="50", key="cfg_dist_max")
@@ -49,15 +52,15 @@ def render():
 
     st.divider()
 
-    st.subheader("🔐 Gestión de Usuario")
-    if token:
-        st.success("✅ Autenticado")
+    st.subheader("Gestion de Usuario")
+    if auth:
+        st.success("Autenticado")
         col_u1, col_u2 = st.columns(2)
         with col_u1:
-            if st.button("📋 Ver perfil", key="btn_perfil", use_container_width=True):
+            if st.button("Ver perfil", key="btn_perfil", use_container_width=True):
                 st.info("Funcionalidad en desarrollo")
         with col_u2:
-            if st.button("🚪 Cerrar sesión", key="btn_logout", use_container_width=True):
+            if st.button("Cerrar sesion", key="btn_logout", use_container_width=True):
                 st.session_state.clear()
                 st.rerun()
     else:
@@ -65,20 +68,26 @@ def render():
 
     st.divider()
 
-    st.subheader("📊 Estadísticas del Sistema")
+    st.subheader("Estadisticas del Sistema")
     col_s1, col_s2, col_s3, col_s4 = st.columns(4)
     with col_s1:
-        st.metric("Registros DB", "127")
+        total_registros = "N/A"
+        if stats and isinstance(stats, dict):
+            total_registros = stats.get("total_records", stats.get("request_count", "N/A"))
+        st.metric("Registros DB", total_registros)
     with col_s2:
-        st.metric("Estaciones", "5")
+        total_stations = "N/A"
+        if stats and isinstance(stats, dict):
+            total_stations = stats.get("total_stations", stats.get("active_stations", "N/A"))
+        st.metric("Estaciones", total_stations if total_stations != "N/A" else "5")
     with col_s3:
-        st.metric("Última sync", datetime.now().strftime("%H:%M"))
+        st.metric("Ultima sync", datetime.now().strftime("%H:%M"))
     with col_s4:
         st.metric("Alertas activas", "2")
 
     st.divider()
 
-    st.subheader("🐳 Estado de Docker")
+    st.subheader("Estado de Docker")
     st.code("""
     CONTAINER ID   IMAGE                  STATUS
     abc123def      skycast-api            running (healthy)
