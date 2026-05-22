@@ -1,16 +1,12 @@
 ﻿{
     "agents":  {
                    "opencode_1":  {
-                                      "status":  "activo",
-                                      "current_task":  "M1: Replace demo data with real API/DB data in dashboard views",
+                                      "status":  "inactivo",
+                                      "current_task":  "",
                                       "files_touching":  [
-                                                             "app/dashboard/views/resumen_ejecutivo.py",
-                                                             "app/dashboard/views/analisis_cientifico.py",
-                                                             "app/dashboard/views/auditoria_datos.py",
-                                                             "app/dashboard/views/mapa_estaciones.py",
-                                                             "app/dashboard/views/configuracion.py"
+
                                                          ],
-                                      "last_updated":  "2026-05-22 19:47:57"
+                                      "last_updated":  "2026-05-22 19:51:16"
                                   },
                    "opencode_2":  {
                                       "status":  "inactivo",
@@ -41,10 +37,11 @@
                          "CRITICAL: AEMET encoding ISO-8859-15 en aemet_service.py (YA ARREGLADO)",
                          "CRITICAL: Dockerfile.dashboard CMD apuntaba a app.py eliminado (YA ARREGLADO)",
                          "CRITICAL: Aider modelo decommissionado (no tocar - config local)",
-                         "MAJOR: Dashboard con datos demo (M1) - pendiente",
-                         "MAJOR: CI PostgreSQL no usado (M2/M3) - pendiente",
-                         "MAJOR: Python 3.13 vs 3.11 Docker (YA ARREGLADO)",
-                         "MINOR: pytest-asyncio 2.0.0 (YA ARREGLADO)",
-                         "MINOR: .gitignore static/ y templates/ (YA ARREGLADO)"
+                          "CRITICAL: Registro mostraba error Pydantic crudo (YA ARREGLADO)",
+                          "MAJOR: Dashboard con datos demo (M1) - YA ARREGLADO",
+                          "MAJOR: CI PostgreSQL no usado (M2/M3) - YA ARREGLADO",
+                          "MAJOR: Python 3.13 vs 3.11 Docker + CI (YA ARREGLADO)",
+                          "MINOR: pytest-asyncio 2.0.0 (YA ARREGLADO)",
+                          "MINOR: .gitignore static/ y templates/ (YA ARREGLADO)"
                      ]
 }
