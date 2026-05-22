@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyCast - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center">
+    <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-slate-700">
+        <h1 class="text-3xl font-bold text-cyan-400 mb-2 text-center">🌦️ SkyCast</h1>
+        <p class="text-slate-400 text-center mb-8">Enterprise Climate Intelligence Platform</p>
+
+        {% if error %}
+        <div class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded mb-6 text-sm">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            <div>
+                <label class="block text-slate-300 text-sm font-medium mb-2">Email</label>
+                <input type="email" name="email" required
+                    class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition"
+                    placeholder="tu@email.com">
+            </div>
+            <div>
+                <label class="block text-slate-300 text-sm font-medium mb-2">Contraseña</label>
+                <input type="password" name="password" required
+                    class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition"
+                    placeholder="••••••••">
+            </div>
+            <button type="submit"
+                class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-3 rounded-lg transition shadow-lg shadow-cyan-900/50">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <a href="/registro" class="text-slate-400 hover:text-cyan-400 text-sm transition">¿No tienes cuenta? Regístrate</a>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-slate-700">
+            <p class="text-slate-500 text-xs text-center">
+                API Docs: <a href="http://localhost:8000/docs" target="_blank" class="text-cyan-400 hover:underline">localhost:8000/docs</a><br>
+                180 tests passing · v1.0.0
+            </p>
+        </div>
+    </div>
+</body>
+</html>

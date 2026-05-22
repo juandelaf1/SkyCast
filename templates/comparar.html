@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyCast - Comparar Datos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-100">
+
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🌦️</span>
+            <h1 class="text-xl font-bold text-cyan-400">SkyCast</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/dashboard" class="text-slate-300 hover:text-cyan-400 text-sm transition">Dashboard</a>
+            <a href="/logout" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-sm transition">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <main class="p-6 max-w-5xl mx-auto">
+
+        <h2 class="text-2xl font-bold text-cyan-400 mb-2">🔬 Comparar Datos Manuales vs AEMET</h2>
+        <p class="text-slate-400 mb-8">Compara tus registros manuales con los datos oficiales de AEMET. Si la diferencia supera los umbrales, se generará una alerta.</p>
+
+        <!-- Form -->
+        <form method="POST" class="bg-slate-800 rounded-xl border border-slate-700 p-6 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Temperatura (°C)</label>
+                    <input type="number" name="temp" step="0.1" placeholder="22.5" required
+                        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Humedad (%)</label>
+                    <input type="number" name="humedad" step="0.1" placeholder="50" required
+                        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Viento (km/h)</label>
+                    <input type="number" name="viento" step="0.1" placeholder="15" required
+                        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Lluvia (mm)</label>
+                    <input type="number" name="lluvia" step="0.1" placeholder="0" required
+                        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Municipio</label>
+                    <input type="text" name="municipio" value="Madrid"
+                        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                </div>
+            </div>
+            <button type="submit"
+                class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-3 px-8 rounded-lg transition shadow-lg shadow-cyan-900/50">
+                Comparar
+            </button>
+        </form>
+
+        {% if error %}
+        <div class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded mb-6">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+        <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
+            <h3 class="text-lg font-semibold text-slate-300 mb-4">📊 Resultados de la Comparación</h3>
+
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-slate-700 rounded-lg p-4">
+                    <p class="text-sm text-slate-400 mb-2">📋 Datos Manuales</p>
+                    <p>🌡️ {{ result.get('fuente_manual', {}).get('temperatura', 'N/A') }}°C</p>
+                    <p>💧 {{ result.get('fuente_manual', {}).get('humedad', 'N/A') }}%</p>
+                    <p>💨 {{ result.get('fuente_manual', {}).get('viento', 'N/A') }} km/h</p>
+                    <p>🌧️ {{ result.get('fuente_manual', {}).get('lluvia', 'N/A') }} mm</p>
+                </div>
+                <div class="bg-slate-700 rounded-lg p-4">
+                    <p class="text-sm text-slate-400 mb-2">🛰️ Datos AEMET</p>
+                    {% if result.get('fuente_aemet') %}
+                        <p>🌡️ {{ result.get('fuente_aemet', {}).get('temperatura', 'N/A') }}°C</p>
+                        <p>💧 {{ result.get('fuente_aemet', {}).get('humedad', 'N/A') }}%</p>
+                        <p>💨 {{ result.get('fuente_aemet', {}).get('viento', 'N/A') }} km/h</p>
+                        <p>🌧️ {{ result.get('fuente_aemet', {}).get('lluvia', 'N/A') }} mm</p>
+                    {% else %}
+                        <p class="text-slate-500">No hay datos AEMET disponibles</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if result.get('discrepancias') %}
+            <h4 class="text-md font-semibold text-slate-300 mb-3">📉 Discrepancias</h4>
+            <table class="w-full text-sm mb-6">
+                <thead class="bg-slate-700 text-slate-300">
+                    <tr>
+                        <th class="text-left px-4 py-2">Variable</th>
+                        <th class="text-left px-4 py-2">Manual</th>
+                        <th class="text-left px-4 py-2">AEMET</th>
+                        <th class="text-left px-4 py-2">Diferencia</th>
+                        <th class="text-left px-4 py-2">Umbral</th>
+                        <th class="text-left px-4 py-2">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700">
+                    {% for var, disc in result.get('discrepancias', {}).items() %}
+                    <tr class="{% if disc.get('supera_umbral') %}bg-red-900/20{% endif %}">
+                        <td class="px-4 py-2 capitalize">{{ var }}</td>
+                        <td class="px-4 py-2">{{ disc.get('manual', 'N/A') }}</td>
+                        <td class="px-4 py-2">{{ disc.get('aemet', 'N/A') }}</td>
+                        <td class="px-4 py-2">{{ disc.get('diferencia', 'N/A') }}</td>
+                        <td class="px-4 py-2">{{ disc.get('umbral', 'N/A') }}</td>
+                        <td class="px-4 py-2">
+                            {% if disc.get('supera_umbral') %}
+                                <span class="bg-red-600 px-2 py-0.5 rounded text-xs">⚠️ SUPERA</span>
+                            {% else %}
+                                <span class="bg-green-600 px-2 py-0.5 rounded text-xs">✅ OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if result.get('alertas') %}
+            <h4 class="text-md font-semibold text-red-400 mb-3">🚨 Alertas ({{ result.get('alertas', [])|length }})</h4>
+            <div class="space-y-2">
+                {% for a in result.get('alertas', []) %}
+                    <div class="bg-red-900/30 border border-red-700 px-4 py-2 rounded text-sm text-red-300">{{ a }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </main>
+
+    <footer class="border-t border-slate-700 px-6 py-4 text-center text-xs text-slate-500">
+        SkyCast v1.0.0 — <a href="/dashboard" class="text-cyan-400 hover:underline">Volver al Dashboard</a>
+    </footer>
+</body>
+</html>

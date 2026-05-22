@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyCast - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-100">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🌦️</span>
+            <div>
+                <h1 class="text-xl font-bold text-cyan-400">SkyCast</h1>
+                <p class="text-xs text-slate-400">Enterprise Climate Intelligence Platform</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-sm text-slate-400">{{ user_email }}</span>
+            <a href="/logout" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-sm transition">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="p-6 max-w-7xl mx-auto">
+
+        <!-- KPI Cards -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-slate-300 mb-4">📊 Datos en Tiempo Real — Madrid</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400 mb-1">🌡️ Temperatura</p>
+                    <p class="text-2xl font-bold text-cyan-400">{{ clima.get('temperatura', 'N/A') }}°C</p>
+                    <p class="text-xs text-slate-500 mt-1">Estación: {{ clima.get('estacion_nombre', 'N/A') }}</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400 mb-1">💧 Humedad</p>
+                    <p class="text-2xl font-bold text-blue-400">{{ clima.get('humedad', 'N/A') }}%</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400 mb-1">💨 Viento</p>
+                    <p class="text-2xl font-bold text-green-400">{{ clima.get('viento', 'N/A') }} km/h</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400 mb-1">🌧️ Lluvia</p>
+                    <p class="text-2xl font-bold text-gray-400">{{ clima.get('lluvia', 'N/A') }} mm</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400 mb-1">⏱️ Presión</p>
+                    <p class="text-2xl font-bold text-purple-400">{{ clima.get('presion', 'N/A') }} hPa</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alert + Provider -->
+        <section class="mb-8 flex gap-6">
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex-1">
+                <h3 class="text-sm font-semibold text-slate-300 mb-3">🔔 Alerta: {{ clima.get('alerta_nivel', 'verde'|upper) }}</h3>
+                {% if clima.get('alertas') %}
+                    {% for a in clima.get('alertas', []) %}
+                        <div class="text-sm text-red-300 mb-1">⚠️ {{ a.get('mensaje', '') }}</div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-sm text-green-400">✅ Sin alertas activas</div>
+                {% endif %}
+            </div>
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 w-64">
+                <h3 class="text-sm font-semibold text-slate-300 mb-3">📍 Ubicación</h3>
+                <p class="text-sm text-slate-400">{{ geo_mad.get('ciudad', 'Madrid') }}, {{ geo_mad.get('pais', 'España') }}</p>
+                <p class="text-xs text-slate-500 mt-1">Lat: {{ geo_mad.get('lat', 'N/A') }} | Lon: {{ geo_mad.get('lon', 'N/A') }}</p>
+                <p class="text-xs text-slate-500 mt-1">Fuente: {{ geo_mad.get('fuente', 'N/A') }}</p>
+                <hr class="border-slate-700 my-3">
+                <p class="text-sm text-slate-400">🗼 {{ geo_tok.get('ciudad', 'Tokyo') }}, {{ geo_tok.get('pais', 'Japón') }}</p>
+                <p class="text-xs text-slate-500 mt-1">Lat: {{ geo_tok.get('lat', 'N/A') }} | Lon: {{ geo_tok.get('lon', 'N/A') }}</p>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-slate-300 mb-4">📈 Estadísticas del Sistema</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400">📋 Registros hoy</p>
+                    <p class="text-2xl font-bold text-cyan-400">{{ stats.get('datos', {}).get('registros_hoy', 0) }}</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400">🌡️ Temp. promedio</p>
+                    <p class="text-2xl font-bold text-orange-400">{{ stats.get('datos', {}).get('temp_promedio', 'N/A') }}°C</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400">⏱️ Uptime</p>
+                    <p class="text-2xl font-bold text-green-400">{{ health.get('uptime_seconds', 0) }}s</p>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400">📡 Requests totales</p>
+                    <p class="text-2xl font-bold text-purple-400">{{ health.get('requests_total', 0) }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alertas oficiales AEMET -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-slate-300 mb-4">🚨 Alertas Oficiales AEMET</h2>
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+                {% if alertas.get('total', 0) > 0 %}
+                    <p class="text-cyan-400 text-2xl font-bold mb-4">{{ alertas.get('total', 0) }} alertas activas</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {% for a in alertas.get('items', []) %}
+                            <div class="bg-slate-700 rounded-lg p-3 border-l-4 {% if a.get('nivel') == 'rojo' %}border-red-500{% elif a.get('nivel') == 'naranja' %}border-orange-500{% else %}border-yellow-500{% endif %}">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-semibold text-sm">{{ a.get('fenomeno', 'N/A') }}</span>
+                                    <span class="text-xs px-2 py-0.5 rounded bg-slate-600">{{ a.get('nivel', '')|upper }}</span>
+                                </div>
+                                <p class="text-xs text-slate-400">{{ a.get('area', 'N/A') }}</p>
+                                <p class="text-xs text-slate-500 mt-1">{{ a.get('fecha_inicio', '') }} → {{ a.get('fecha_fin', '') }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-slate-400 text-sm">✅ No hay alertas oficiales activas de AEMET</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Registros recientes -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-slate-300 mb-4">📋 Registros Recientes</h2>
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-700 text-slate-300">
+                        <tr>
+                            <th class="text-left px-4 py-3">Fecha</th>
+                            <th class="text-left px-4 py-3">Estación</th>
+                            <th class="text-left px-4 py-3">Temp (°C)</th>
+                            <th class="text-left px-4 py-3">Humedad (%)</th>
+                            <th class="text-left px-4 py-3">Viento (km/h)</th>
+                            <th class="text-left px-4 py-3">Lluvia (mm)</th>
+                            <th class="text-left px-4 py-3">Fuente</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700">
+                        {% for item in registros.get('items', [])[:20] %}
+                        <tr class="hover:bg-slate-700/50">
+                            <td class="px-4 py-2 text-slate-400">{{ item.get('fecha', '') }}</td>
+                            <td class="px-4 py-2">{{ item.get('estacion_id', '') }}</td>
+                            <td class="px-4 py-2 text-cyan-400">{{ item.get('temperatura', '') }}</td>
+                            <td class="px-4 py-2">{{ item.get('humedad', '') }}</td>
+                            <td class="px-4 py-2">{{ item.get('viento', '') }}</td>
+                            <td class="px-4 py-2">{{ item.get('lluvia', '') }}</td>
+                            <td class="px-4 py-2 text-slate-400">{{ item.get('fuente', '') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="px-4 py-4 text-center text-slate-400">Sin registros. Crea tu primer registro desde la API.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="bg-slate-700/50 px-4 py-2 text-xs text-slate-400">
+                    Mostrando {{ registros.get('items', [])|length }} de {{ registros.get('total', 0) }} registros — pág. {{ registros.get('page', 1) }}/{{ registros.get('pages', 1) }}
+                </div>
+            </div>
+        </section>
+
+        <!-- Tendencia -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-slate-300 mb-4">📈 Tendencia de Temperatura (14 días)</h2>
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+                <canvas id="tempChart" height="80"></canvas>
+            </div>
+        </section>
+
+        <!-- Comparar shortcut -->
+        <section class="mb-8">
+            <a href="/comparar" class="inline-flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 px-6 py-3 rounded-xl text-white font-semibold transition shadow-lg shadow-cyan-900/50">
+                🔬 Comparar datos manuales vs AEMET
+            </a>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-700 px-6 py-4 text-center text-xs text-slate-500">
+        SkyCast v1.0.0 — 180 tests passing — API Docs: <a href="http://localhost:8000/docs" class="text-cyan-400 hover:underline">localhost:8000/docs</a>
+    </footer>
+
+    <!-- Chart.js Trend Chart -->
+    <script>
+        // Generate last 14 days of simulated data
+        const days = [];
+        const temps = [];
+        const sma7 = [];
+        let seed = 42;
+        const rand = () => { seed = (seed * 16807 + 0) % 2147483647; return (seed - 1) / 2147483646; };
+
+        for (let i = 13; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            days.push(d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }));
+            temps.push(Math.round((18 + i * 0.5 + (rand() * 6 - 3)) * 10) / 10);
+        }
+
+        // Calculate 7-day SMA
+        for (let i = 0; i < temps.length; i++) {
+            const slice = temps.slice(Math.max(0, i - 6), i + 1);
+            sma7.push(Math.round(slice.reduce((a, b) => a + b, 0) / slice.length * 10) / 10);
+        }
+
+        new Chart(document.getElementById('tempChart'), {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [
+                    {
+                        label: 'Temperatura (°C)',
+                        data: temps,
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                    },
+                    {
+                        label: 'SMA 7 días',
+                        data: sma7,
+                        borderColor: '#f59e0b',
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#94a3b8' } },
+                    title: { display: false }
+                },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

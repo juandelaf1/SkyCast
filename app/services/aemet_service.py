@@ -1,3 +1,4 @@
+import json
 import httpx
 import logging
 from typing import Optional
@@ -64,7 +65,7 @@ class AemetService:
                     if datos_url:
                         resp2 = await client.get(datos_url)
                         if resp2.status_code == 200:
-                            estaciones = resp2.json()
+                            estaciones = json.loads(resp2.content.decode("ISO-8859-15"))
                         else:
                             return None
                     else:
@@ -122,7 +123,7 @@ class AemetService:
                     if datos_url:
                         resp2 = await client.get(datos_url)
                         if resp2.status_code == 200:
-                            data = resp2.json()
+                            data = json.loads(resp2.content.decode("ISO-8859-15"))
                         else:
                             return None
                     else:
@@ -180,7 +181,7 @@ class AemetService:
                     datos_url = data["datos"]
                     resp2 = await client.get(datos_url)
                     if resp2.status_code == 200:
-                        alerts = resp2.json()
+                        alerts = json.loads(resp2.content.decode("ISO-8859-15"))
                         return self._normalize_aemet_alerts(alerts)
                 return []
         except Exception as e:

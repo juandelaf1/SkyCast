@@ -115,7 +115,16 @@ async def registro_post(request: Request, email: str = Form(...), password: str 
     r = httpx.post(f"{settings.API_BASE}/api/v1/auth/register", json={"email": email, "password": password}, timeout=10)
     if r.status_code == 200:
         return templates.TemplateResponse("registro.html", {"request": request, "error": None, "success": "Cuenta creada. Ya puedes iniciar sesión."})
-    error = r.json().get("detail", "Error al registrar") if r.status_code < 500 else "Error del servidor"
+    try:
+        body = r.json()
+        if isinstance(body, dict) and isinstance(body.get("detail"), list):
+            error = body["detail"][0].get("msg", "Error de validación")
+        elif isinstance(body, dict):
+            error = body.get("detail", "Error al registrar")
+        else:
+            error = "Error al registrar"
+    except Exception:
+        error = "Error al registrar" if r.status_code < 500 else "Error del servidor"
     return templates.TemplateResponse("registro.html", {"request": request, "error": error, "success": None})
 
 
