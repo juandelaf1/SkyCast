@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.dashboard.views._api import api_get, is_authenticated
 
@@ -26,9 +26,7 @@ def render():
     else:
         st.caption("Mostrando datos simulados de demostracion")
         data = None
-        stats = None
         registros = None
-        alertas = None
 
     if not data or (isinstance(data, dict) and data.get("status") != "ok"):
         import numpy as np
@@ -74,7 +72,6 @@ def render():
 
     alert_col1, alert_col2 = st.columns([3, 1])
     with alert_col1:
-        color_map = {"rojo": "Rojo", "naranja": "Naranja", "amarillo": "Amarillo", "azul": "Azul", "verde": "Verde"}
         st.subheader(f"Alerta: {nivel_alerta.upper()}")
         if alertas_list:
             for a in alertas_list:

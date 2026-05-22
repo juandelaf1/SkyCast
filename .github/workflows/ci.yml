@@ -28,10 +28,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -62,7 +62,6 @@ jobs:
           AEMET_API_KEY: ""
           AEMET_BASE_URL: "https://opendata.aemet.es/opendata"
           SECRET_KEY: "test-secret-key-ci"
-          DATABASE_URL: "sqlite:///./test_ci.db"
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4

@@ -1,3 +1,4 @@
+import os
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,8 +14,10 @@ from app.main import app
 from app.auth.jwt_auth import get_current_user
 from app.config.settings import settings
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test_skycast.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test_skycast.db")
+_is_postgres = SQLALCHEMY_DATABASE_URL.startswith("postgresql")
+_connect_args = {"check_same_thread": False} if not _is_postgres else {}
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=_connect_args)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
