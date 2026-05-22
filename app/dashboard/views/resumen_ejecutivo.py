@@ -20,9 +20,7 @@ def render():
     if auth:
         st.caption("Conectado a datos reales de la API")
         data = api_get("/api/v1/clima?lat=40.4168&lon=-3.7038")
-        stats = api_get("/api/v1/health/stats")
         registros = api_get("/api/v1/registros?page=1&limit=100")
-        alertas = api_get("/api/v1/alertas")
     else:
         st.caption("Mostrando datos simulados de demostracion")
         data = None
