@@ -5,7 +5,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue?logo=docker)](https://www.docker.com/)
 [![Tests](https://img.shields.io/badge/Tests-158%20passing-brightgreen)](https://pytest.org/)
-[![CI/CD](https://img.shields.io/badge/CI/CD-GitHub%20Actions-blue)](https://github.com/juandelaf1/SkyCast/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/juandelaf1/SkyCast/ci.yml?branch=portfolio-analisis&label=CI&logo=github)](https://github.com/juandelaf1/SkyCast/actions)
 
 Plataforma de monitorización climática con datos oficiales de AEMET, crowdsourcing colaborativo (modelo Waze), y alertas inteligentes. Diseñada como núcleo de datos para integrarse en plataformas logísticas empresariales.
 
