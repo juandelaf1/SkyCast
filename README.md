@@ -1,142 +1,175 @@
-# SkyCast — Enterprise Climate Intelligence Platform
+<p align="center">
+  <img src="docs/img/skycast_banner.jpg" alt="Sky Cast Banner" width="800">
+</p>
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-Supported-blue?logo=docker)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/Tests-158%20passing-brightgreen)](https://pytest.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/juandelaf1/SkyCast/ci.yml?branch=portfolio-analisis&label=CI&logo=github)](https://github.com/juandelaf1/SkyCast/actions)
+# SKY CAST — Enterprise Climate Intelligence Platform
 
-Plataforma de monitorización climática con datos oficiales de AEMET, crowdsourcing colaborativo (modelo Waze), y alertas inteligentes. Diseñada como núcleo de datos para integrarse en plataformas logísticas empresariales.
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![Plotly](https://img.shields.io/badge/Plotly-3F4F75?logo=plotly&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-158%20passing-brightgreen?logo=pytest)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+> **From generic weather apps to enterprise climate intelligence. Official AEMET data + crowdsourcing (Waze model) + smart alerts + REST API.**
 
 ---
 
-## Problema
+## Elevator Pitch
 
-Las apps del tiempo generales no cubren necesidades específicas:
+**Problem**: Generic weather apps show "23°C and sunny" — but a city council needs to know if tomorrow's wind will exceed 50 km/h to close parks, and a logistics company needs to decide whether to delay fleets due to heavy rain on a specific route. No solution combines official data with collaborative intelligence for enterprise decision-making.
 
-- Un **ayuntamiento** necesita saber si mañana habrá viento > 50 km/h para cerrar parques, no solo "23°C y soleado".
-- Una **empresa logística** necesita decidir si retrasa flotas por lluvia intensa en una ruta concreta.
-- Un **técnico municipal** cruza datos de sensores oficiales con reportes manuales de ciudadanos para decidir si activa un protocolo de heladas.
+**Hypothesis**: Combining official AEMET data with geo-validated crowdsourcing (Waze model) and configurable alert thresholds can create a climate intelligence system that outperforms generic apps and delivers real value to councils, logistics companies, and enterprises.
 
-SkyCast resuelve esto combinando **datos oficiales** (AEMET OpenData), **crowdsourcing** (reportes manuales con validación geoespacial), y **analytics** (alertas, anomalías, tendencias históricas).
+**Solution**: SkyCast — a platform that evolved through **4 phases** (from Streamlit + CSV prototype to production-grade FastAPI + PostgreSQL + Docker + CI/CD), integrating AEMET OpenData, collaborative reports, smart alerts, documented REST API, and **158 automated tests** ensuring production quality.
 
-## Diferencial
+---
 
-| Diferencia | Apps del tiempo | SkyCast |
-|------------|----------------|---------|
-| Fuente principal | API privada | AEMET OpenData (oficial España) |
-| Crowdsourcing | No | Reportes manuales con geovalidación |
-| Alertas por umbral fijo | Genéricas | Configurables por usuario |
-| Histórico analizable | Limitado | CRUD completo + ETL con linaje |
-| API para terceros | No | REST documentada (Swagger) |
-| Destinado a | Consumidor final | Empresas, ayuntamientos, logística |
+## Problem
 
-## Arquitectura
+Generic weather apps don't cover specific business needs:
+
+- A **city council** needs to know if tomorrow's wind > 50 km/h to close parks, not just "23°C and sunny".
+- A **logistics company** needs to decide whether to delay fleets due to heavy rain on a specific route.
+- A **municipal technician** cross-references official sensor data with citizen reports to decide whether to activate a frost protocol.
+
+SkyCast solves this by combining **official data** (AEMET OpenData), **crowdsourcing** (geo-validated manual reports), and **analytics** (alerts, anomalies, historical trends).
+
+## Key Metrics
+
+| Metric | Value |
+|--------|-------|
+| Automated Tests | **158** (33 files, 0 failures) |
+| API Endpoints | **10+** (REST + Swagger) |
+| Data Sources | AEMET OpenData + OpenWeatherMap (fallback) + Crowdsourcing |
+| Refresh Rate | Every **2 hours** (APScheduler) |
+| Security | JWT + SHA-256 + salt + rate limiting |
+| Architecture Layers | 4 (API, Dashboard, ETL, Scheduling) |
+| Evolution Phases | 4 (V1 protoype -> Production) |
+| Database Models | **9** (SQLAlchemy ORM) |
+| Test Coverage | Auth, Alerts, Validators, ETL, Anomaly Detection, Cache, Lineage |
+
+## Differentiator
+
+| Factor | Generic Weather Apps | SkyCast |
+|--------|---------------------|---------|
+| Data Source | Private API | AEMET OpenData (official Spain) |
+| Crowdsourcing | No | Geo-validated manual reports |
+| Alerts | Generic | User-configurable thresholds |
+| Historical Data | Limited | Full CRUD + ETL with lineage |
+| Third-party API | No | Documented REST (Swagger) |
+| Audience | Consumer | Businesses, councils, logistics |
+
+## Architecture
 
 ```
-FastAPI + Pydantic ── REST API ──┐
-                                  ├── PostgreSQL (SQLAlchemy ORM)
-Streamlit + Plotly ─── Dashboard ─┘
-                                  │
-APScheduler ─── AEMET API ────────┘
-    (cada 2h, fallback OpenWeatherMap)
+FastAPI + Pydantic -- REST API --+
+                                  +-- PostgreSQL (SQLAlchemy ORM)
+Streamlit + Plotly --- Dashboard -+
+                                  |
+APScheduler --- AEMET API --------+
+    (every 2h, fallback OpenWeatherMap)
 ```
 
-### Flujo ETL (traza completa)
+### ETL Flow (full lineage)
 
 ```
-Extraer (AEMET JSON) → Transformar (Pandas: nulos, duplicados, tipos)
-                      → Cargar (SQLAlchemy) → LineageLogger (traza)
+Extract (AEMET JSON) -> Transform (Pandas: nulls, duplicates, types)
+                      -> Load (SQLAlchemy) -> LineageLogger (trace)
 ```
 
-Cada paso registra filas entrada/salida/descartadas con `LineageLogger`.
+Each step logs input/output/discarded rows with `LineageLogger`.
 
-## Stack técnico
+## Tech Stack
 
-| Capa | Tecnología |
-|------|-----------|
+| Layer | Technology |
+|-------|-----------|
 | API | FastAPI + Uvicorn + Pydantic + async |
-| Base de datos | PostgreSQL 16 / SQLite + SQLAlchemy ORM (9 modelos) |
+| Database | PostgreSQL 16 / SQLite + SQLAlchemy ORM (9 models) |
 | Dashboard | Streamlit + Plotly + Geopandas + Folium |
 | ETL | Pandas + NumPy + LineageLogger |
-| Autenticación | JWT + SHA-256 + salt único |
-| Cache | Redis (opcional, fallback in-memory) |
-| Scheduling | APScheduler (fetch AEMET cada 2h) |
-| Contenedores | Docker + Docker Compose |
+| Auth | JWT + SHA-256 + unique salt |
+| Cache | Redis (optional, in-memory fallback) |
+| Scheduling | APScheduler (AEMET fetch every 2h) |
+| Containers | Docker + Docker Compose |
 | CI/CD | GitHub Actions (pytest + ruff + Docker build) |
-| Tests | 158 tests, pytest + httpx, pre-push hooks |
+| Testing | 158 tests, pytest + httpx, pre-push hooks |
 
-## Inicio rápido
+## Quick Start
 
 ```bash
 git clone https://github.com/juandelaf1/SkyCast.git
 cd SkyCast
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv
 pip install -r requirements.txt
-cp .env.example .env   # Añadir AEMET_API_KEY
-python -m app.db       # Inicializar BD
+cp .env.example .env   # Add AEMET_API_KEY
+python -m app.db       # Init DB
 uvicorn app.main:app --reload --port 8000
 streamlit run app/dashboard/app.py --server.port 8501
 ```
 
 Docs: http://localhost:8000/docs | Dashboard: http://localhost:8501
 
-## API endpoints principales
+## API Endpoints
 
-| Método | Endpoint | Descripción |
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/v1/auth/register` | Registro |
-| POST | `/api/v1/auth/login` | Login JWT |
-| GET | `/api/v1/clima?lat=&lon=` | Clima actual |
-| GET | `/api/v1/geo/{ciudad}` | Geocodificar |
-| GET | `/api/v1/registros?page=&limit=` | Histórico paginado |
-| POST | `/api/v1/registros` | Reporte manual (crowdsourcing) |
+| POST | `/api/v1/auth/register` | Register |
+| POST | `/api/v1/auth/login` | JWT Login |
+| GET | `/api/v1/clima?lat=&lon=` | Current weather |
+| GET | `/api/v1/geo/{city}` | Geocoding |
+| GET | `/api/v1/registros?page=&limit=` | Paginated history |
+| POST | `/api/v1/registros` | Manual report (crowdsourcing) |
 | POST | `/api/v1/comparar` | Manual vs AEMET |
-| GET/POST | `/api/v1/alertas` | Umbrales configurables |
+| GET/POST | `/api/v1/alertas` | Configurable thresholds |
 
-## Seguridad
+## Security
 
-- Contraseñas: SHA-256 + salt (16 bytes) por usuario
-- Tokens: JWT HS256, expiración 24h
-- Validación: Pydantic + rangos físicos (-20/60°C, 0-100% humedad)
-- Rate limiting: slowapi (30 req/min clima, 10 geo)
+- Passwords: SHA-256 + salt (16 bytes) per user
+- Tokens: JWT HS256, 24h expiration
+- Validation: Pydantic + physical ranges (-20/60°C, 0-100% humidity)
+- Rate limiting: slowapi (30 req/min climate, 10 geo)
 - Pre-push hooks: lint + tests + anti-leak secrets
 
-## Calidad (158 tests, 0 failures, CI/CD)
+## Quality (158 tests, 0 failures, CI/CD)
 
 ```bash
 pytest --cov=app --cov-report=html   # 158 tests, 33 files
-ruff check app/ tests/               # 0 errores
+ruff check app/ tests/               # 0 errors
 ```
 
-Cobertura: API endpoints, auth, alerts, validators, ETL (extract/transform/load), haversine, anomaly detection, cache, lineage logger, servicios externos mockeados.
+Coverage: API endpoints, auth, alerts, validators, ETL (extract/transform/load), haversine, anomaly detection, cache, lineage logger, external services mocked.
 
-## Visión: plataforma logística
+## Vision: Logistics Platform
 
-SkyCast está diseñado como **módulo climático** de una plataforma logística mayor. Los endpoints REST permiten que sistemas de routing, flotas, y seguros consuman datos climáticos históricos y en tiempo real sin acoplamiento. Próximos pasos naturales:
+SkyCast is designed as the **climate module** of a larger logistics platform. REST endpoints allow routing, fleet, and insurance systems to consume historical and real-time climate data without coupling. Natural next steps:
 
-1. Alertas push (email/Telegram) para umbrales personalizados
-2. Geo-cercas: disparar alertas cuando una ubicación supere umbrales
-3. Integración con APIs de routing (calcular retrasos por clima)
-4. Modelo predictivo (regresión temp/humedad a 48h)
-
----
-
-## Evolución del proyecto
-
-| Fase | Proyecto | Stack | Hito |
-|------|----------|-------|------|
-| F1 | [SkyCast V1](https://github.com/juandelaf1/SkyCast-V1) | Streamlit + CSV | Prototipo funcional |
-| F2 | [ClimApp](https://github.com/juandelaf1/ClimApp) | Flask MVC + AEMET | Arquitectura por capas, 66 tests |
-| F3 | [Vortex](https://github.com/juandelaf1/Vortex) | FastAPI/Flask + PostgreSQL | ETL, linaje, trazabilidad |
-| F4-Pre | [SkyCast V2 Pre](https://github.com/juandelaf1/SkyCast-V2-Pre) | FastAPI + Docker | JWT con salt, anomalías |
-| **F4** | **SkyCast** | **FastAPI + PostgreSQL + Docker** | **158 tests, CI/CD, producción** |
+1. Push alerts (email/Telegram) for personalized thresholds
+2. Geo-fences: trigger alerts when locations exceed thresholds
+3. Routing API integration (calculate weather-related delays)
+4. Predictive model (temp/humidity regression to 48h)
 
 ---
 
-## Autor
+## Project Evolution
+
+| Phase | Project | Stack | Milestone |
+|-------|---------|-------|-----------|
+| F1 | [SkyCast V1](https://github.com/juandelaf1/SkyCast-V1) | Streamlit + CSV | Functional prototype |
+| F2 | [ClimApp](https://github.com/juandelaf1/ClimApp) | Flask MVC + AEMET | Layered architecture, 66 tests |
+| F3 | [Vortex](https://github.com/juandelaf1/Vortex) | FastAPI/Flask + PostgreSQL | ETL, lineage, traceability |
+| F4-Pre | [SkyCast V2 Pre](https://github.com/juandelaf1/SkyCast-V2-Pre) | FastAPI + Docker | JWT with salt, anomalies |
+| **F4** | **SkyCast** | **FastAPI + PostgreSQL + Docker** | **158 tests, CI/CD, production-ready** |
+
+---
+
+## Author
 
 **Juan de la Fuente** — [@juandelaf1](https://github.com/juandelaf1)
+
+juandelafuentelarrocca@gmail.com
 
 MIT © 2026
