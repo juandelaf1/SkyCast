@@ -12,6 +12,10 @@
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?logo=plotly&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-158%20passing-brightgreen?logo=pytest)
+![Last Commit](https://img.shields.io/github/last-commit/juandelaf1/SkyCast?logo=github)
+![Languages](https://img.shields.io/github/languages/count/juandelaf1/SkyCast)
+![Top Language](https://img.shields.io/github/languages/top/juandelaf1/SkyCast)
+![Repo Size](https://img.shields.io/github/repo-size/juandelaf1/SkyCast)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 > **From generic weather apps to enterprise climate intelligence. Official AEMET data + crowdsourcing (Waze model) + smart alerts + REST API.**
@@ -158,18 +162,16 @@ SkyCast is designed as the **climate module** of a larger logistics platform. RE
 
 | Phase | Project | Stack | Milestone |
 |-------|---------|-------|-----------|
-| F1 | [SkyCast V1](https://github.com/juandelaf1/SkyCast-V1) | Streamlit + CSV | Functional prototype |
-| F2 | [ClimApp](https://github.com/juandelaf1/ClimApp) | Flask MVC + AEMET | Layered architecture, 66 tests |
-| F3 | [Vortex](https://github.com/juandelaf1/Vortex) | FastAPI/Flask + PostgreSQL | ETL, lineage, traceability |
-| F4-Pre | [SkyCast V2 Pre](https://github.com/juandelaf1/SkyCast-V2-Pre) | FastAPI + Docker | JWT with salt, anomalies |
+| F1 | SkyCast V1 | Streamlit + CSV | Functional prototype |
+| F2 | ClimApp | Flask MVC + AEMET | Layered architecture, 66 tests |
+| F3 | Vortex | FastAPI/Flask + PostgreSQL | ETL, lineage, traceability |
+| F4-Pre | SkyCast V2 Pre | FastAPI + Docker | JWT with salt, anomalies |
 | **F4** | **SkyCast** | **FastAPI + PostgreSQL + Docker** | **158 tests, CI/CD, production-ready** |
 
 ---
 
 ## Author
 
-**Juan de la Fuente** — [@juandelaf1](https://github.com/juandelaf1)
-
-juandelafuentelarrocca@gmail.com
+**Juan de la Fuente** — [@juandelaf1](https://github.com/juandelaf1) · juandelafuentelarrocca@gmail.com
 
 MIT © 2026
