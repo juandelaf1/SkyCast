@@ -166,6 +166,55 @@ class AemetService:
         except (ValueError, AttributeError):
             return None
 
+    async def fetch_all_stations(self) -> list[dict]:
+        if not self.api_key:
+            return []
+        try:
+            url = f"{self.base_url}/observacion/convencional/todas"
+            headers = {"api_key": self.api_key}
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                resp = await client.get(url, headers=headers)
+                if resp.status_code != 200:
+                    return []
+                raw = resp.json()
+                if isinstance(raw, dict):
+                    datos_url = raw.get("datos")
+                    if not datos_url:
+                        return []
+                    resp2 = await client.get(datos_url)
+                    if resp2.status_code != 200:
+                        return []
+                    stations = json.loads(resp2.content.decode("ISO-8859-15"))
+                else:
+                    stations = raw
+            result = []
+            for s in stations if isinstance(stations, list) else []:
+                try:
+                    lat = float(s.get("lat", s.get("latitud", 0)))
+                    lon = float(s.get("lon", s.get("longitud", 0)))
+                except (ValueError, TypeError):
+                    continue
+                if lat == 0 and lon == 0:
+                    continue
+                result.append({
+                    "id": s.get("idema", ""),
+                    "nombre": s.get("ubi", s.get("idema", "")),
+                    "provincia": "",
+                    "lat": lat,
+                    "lon": lon,
+                    "temperatura": self._parse_float(s.get("ta")),
+                    "humedad": self._parse_float(s.get("hr")),
+                    "viento": self._ms_to_kmh(s.get("vv")),
+                    "lluvia": self._parse_float(s.get("prec")),
+                    "presion": self._parse_float(s.get("p")),
+                    "alerta": "verde",
+                    "fuente": "AEMET",
+                })
+            return result
+        except Exception as e:
+            logger.error(f"Error fetching all AEMET stations: {e}")
+            return []
+
     async def fetch_official_alerts(self) -> list[dict]:
         if not self.api_key:
             return []

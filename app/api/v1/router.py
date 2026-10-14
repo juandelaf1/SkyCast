@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import clima, geo, health, alerts, records, comparison, auth, dashboard
+from app.api.v1 import clima, geo, health, alerts, records, comparison, auth, dashboard, estaciones, validaciones
 
 router = APIRouter()
 
@@ -12,3 +12,5 @@ router.include_router(alerts.router, prefix="/alertas", tags=["Alertas"])
 router.include_router(records.router, prefix="/registros", tags=["Registros"])
 router.include_router(comparison.router, prefix="/comparar", tags=["Comparacion"])
 router.include_router(dashboard.router, tags=["Dashboard"])
+router.include_router(estaciones.router, prefix="/estaciones", tags=["Estaciones"])
+router.include_router(validaciones.router, prefix="/validar-reclamo", tags=["Validaciones"])

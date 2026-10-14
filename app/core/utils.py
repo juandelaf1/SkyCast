@@ -2,6 +2,7 @@ import math
 
 
 def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    lat1, lon1, lat2, lon2 = float(lat1), float(lon1), float(lat2), float(lon2)
     R = 6371.0
     lat1_rad = math.radians(lat1)
     lat2_rad = math.radians(lat2)

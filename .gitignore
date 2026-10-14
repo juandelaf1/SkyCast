@@ -32,3 +32,11 @@ SCRIPTS_*.md
 .aider*
 # Coordination file between agents - tracked
 !.COORDINATION.json
+
+token.txt
+*.txt
+_debug_*.py
+temp_*.json
+uvicorn_*.txt
+test_*.json
+*.log
