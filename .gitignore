@@ -40,3 +40,9 @@ temp_*.json
 uvicorn_*.txt
 test_*.json
 *.log
+
+_debug_*.py
+temp_*.json
+*_temp.py
+uvicorn_*.txt
+test_*.json
