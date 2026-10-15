@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +33,7 @@ app = FastAPI(
 )
 
 # Mount static files for CSS/JS if needed in the future
+Path("static").mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.state.limiter = limiter
