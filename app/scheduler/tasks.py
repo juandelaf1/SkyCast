@@ -1,14 +1,15 @@
 import asyncio
+import logging
+from datetime import datetime
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-import logging
 from sqlalchemy.orm import Session
 
+from app.db.models import Estacion, FuenteDato, Medicion
 from app.db.session import SessionLocal
 from app.services.aemet_service import AemetService
 from app.services.alert_service import AlertService
-from app.db.models import Medicion, Estacion, FuenteDato
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 scheduler = BackgroundScheduler()

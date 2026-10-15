@@ -1,10 +1,11 @@
 import os
 import secrets
+from pathlib import Path
+
+import httpx
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-import httpx
-from pathlib import Path
 
 from app.config.settings import settings
 

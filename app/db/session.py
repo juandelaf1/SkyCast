@@ -1,7 +1,9 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from app.config.settings import settings
 import os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+
+from app.config.settings import settings
 
 os.makedirs("data", exist_ok=True)
 

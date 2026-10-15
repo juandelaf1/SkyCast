@@ -1,9 +1,10 @@
-import streamlit as st
+from datetime import datetime, timedelta
+
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
-import numpy as np
+import streamlit as st
 
 from app.dashboard.views._api import api_get, is_authenticated
 

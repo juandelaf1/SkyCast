@@ -54,7 +54,6 @@ jobs:
         run: |
           cp .env.example .env
           echo "DATABASE_URL=postgresql://skycast:skycast@localhost:5432/skycast_test" >> .env
-          echo "TESTING=1" >> .env
 
       - name: Run tests
         run: pytest --cov=app --cov-report=term-missing

@@ -1,0 +1,13 @@
+target-version = "py313"
+
+[lint]
+# Select core error rules; FastAPI's Depends() pattern triggers B008,
+# and broad Exception catches are intentional for resilience/logging.
+select = ["E", "F", "W"]
+ignore = [
+    "E501",  # line too long (formatter handles)
+]
+
+[lint.per-file-ignores]
+# Test files may use broader patterns
+"tests/**" = ["E402"]

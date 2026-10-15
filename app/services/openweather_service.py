@@ -1,6 +1,7 @@
-import httpx
 import logging
-from typing import Optional
+
+import httpx
+
 from app.config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -13,8 +14,8 @@ class OpenWeatherService:
         self.timeout = settings.AEMET_TIMEOUT
 
     async def get_weather(
-        self, lat: Optional[float] = None, lon: Optional[float] = None, city: Optional[str] = None
-    ) -> Optional[dict]:
+        self, lat: float | None = None, lon: float | None = None, city: str | None = None
+    ) -> dict | None:
         if not self.api_key:
             logger.info("OpenWeather: no API key configured")
             return None
@@ -54,7 +55,7 @@ class OpenWeatherService:
             logger.error(f"OpenWeather error: {e}")
             return None
 
-    def _ms_to_kmh(self, val) -> Optional[float]:
+    def _ms_to_kmh(self, val) -> float | None:
         if val is None:
             return None
         try:

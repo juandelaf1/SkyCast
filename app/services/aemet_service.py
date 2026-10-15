@@ -1,7 +1,7 @@
 import json
-import httpx
 import logging
-from typing import Optional
+
+import httpx
 
 from app.config.settings import settings
 from app.core.utils import haversine
@@ -16,14 +16,14 @@ class AemetService:
         self.timeout = settings.AEMET_TIMEOUT
 
     @staticmethod
-    def _is_spain(lat: Optional[float], lon: Optional[float]) -> bool:
+    def _is_spain(lat: float | None, lon: float | None) -> bool:
         if lat is None or lon is None:
             return False
         return 27.0 < lat < 44.0 and -19.0 < lon < 5.0
 
     async def get_weather(
-        self, lat: Optional[float] = None, lon: Optional[float] = None, city: Optional[str] = None
-    ) -> Optional[dict]:
+        self, lat: float | None = None, lon: float | None = None, city: str | None = None
+    ) -> dict | None:
         if self.api_key and self._is_spain(lat, lon):
             try:
                 estacion = await self._find_nearest_station(lat, lon)
@@ -49,7 +49,7 @@ class AemetService:
 
         return None
 
-    async def _find_nearest_station(self, lat: float, lon: float) -> Optional[dict]:
+    async def _find_nearest_station(self, lat: float, lon: float) -> dict | None:
         try:
             url = f"{self.base_url}/valores/climatologicos/inventarioestaciones/todasestaciones"
             headers = {"api_key": self.api_key}
@@ -107,7 +107,7 @@ class AemetService:
             logger.error(f"Error finding station: {e}")
             return None
 
-    async def _fetch_station_data(self, indicativo: str) -> Optional[dict]:
+    async def _fetch_station_data(self, indicativo: str) -> dict | None:
         try:
             url = f"{self.base_url}/valores/climatologicos/ultimosdatos/{indicativo}"
             headers = {"api_key": self.api_key}
@@ -149,7 +149,7 @@ class AemetService:
             "provincia": raw.get("provincia", "Madrid"),
         }
 
-    def _parse_float(self, val) -> Optional[float]:
+    def _parse_float(self, val) -> float | None:
         if val is None or val == "":
             return None
         try:
@@ -157,7 +157,7 @@ class AemetService:
         except (ValueError, AttributeError):
             return None
 
-    def _ms_to_kmh(self, val) -> Optional[float]:
+    def _ms_to_kmh(self, val) -> float | None:
         if val is None:
             return None
         try:
@@ -206,5 +206,5 @@ class AemetService:
                 })
         return result
 
-    def _get_fallback_data(self, lat: float, lon: float, city: str) -> Optional[dict]:
+    def _get_fallback_data(self, lat: float, lon: float, city: str) -> dict | None:
         return None

@@ -1,4 +1,3 @@
-from typing import Optional
 
 
 class AlertService:
@@ -57,7 +56,7 @@ class AlertService:
 
         return alertas
 
-    def get_nivel_maximo(self, data: dict) -> Optional[str]:
+    def get_nivel_maximo(self, data: dict) -> str | None:
         alertas = self.get_alertas_activas(data)
         if not alertas:
             return "verde"

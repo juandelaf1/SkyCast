@@ -64,7 +64,30 @@ class TestAemetService:
 
     def test_get_weather_fallback_openweather(self):
         import asyncio
-        result = asyncio.run(self.service.get_weather(lat=40.4168, lon=-3.7038))
+        from unittest.mock import AsyncMock, patch
+
+        mock_ow_result = {
+            "estacion_id": 0,
+            "estacion_nombre": "OpenWeather - Madrid",
+            "distancia_km": 0.0,
+            "data": {
+                "temperatura": 22.0,
+                "humedad": 60,
+                "viento": 18.0,
+                "lluvia": 0.0,
+                "presion": 1013,
+                "municipio": "Madrid",
+                "provincia": "OpenWeatherMap",
+            },
+        }
+
+        with patch(
+            "app.services.openweather_service.OpenWeatherService.get_weather",
+            new_callable=AsyncMock,
+            return_value=mock_ow_result,
+        ):
+            result = asyncio.run(self.service.get_weather(lat=40.4168, lon=-3.7038))
+
         assert result is not None
         assert result.get("proveedor") == "OpenWeatherMap"
 

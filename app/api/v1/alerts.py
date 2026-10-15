@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import Optional
 import logging
 
-from app.db.session import get_db
-from app.db.models import UmbralAlerta, Usuario
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
 from app.auth.jwt_auth import get_current_user
+from app.db.models import UmbralAlerta, Usuario
+from app.db.session import get_db
 from app.services.aemet_service import AemetService
 
 router = APIRouter()
@@ -18,23 +18,23 @@ class UmbralResponse(BaseModel):
     variable: str
     nivel: str
     valor: float
-    descripcion: Optional[str] = None
-    color_hex: Optional[str] = None
-    icono: Optional[str] = None
+    descripcion: str | None = None
+    color_hex: str | None = None
+    icono: str | None = None
 
 
 class AlertUpdate(BaseModel):
     variable: str
     nivel: str
     valor: float
-    descripcion: Optional[str] = None
-    color_hex: Optional[str] = None
-    icono: Optional[str] = None
+    descripcion: str | None = None
+    color_hex: str | None = None
+    icono: str | None = None
 
 
 @router.get("", response_model=list[UmbralResponse])
 def get_alertas(
-    variable: Optional[str] = None,
+    variable: str | None = None,
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user),
 ):

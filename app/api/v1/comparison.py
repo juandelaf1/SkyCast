@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from datetime import datetime
-from typing import Optional
 import logging
+from datetime import datetime
 
-from app.db.session import get_db
-from app.db.models import Medicion, Usuario, FuenteDato
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
 from app.auth.jwt_auth import get_current_user
+from app.db.models import FuenteDato, Medicion, Usuario
+from app.db.session import get_db
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -18,14 +18,14 @@ class ComparisonRequest(BaseModel):
     humedad_manual: float
     viento_manual: float
     lluvia_manual: float
-    fecha: Optional[str] = None
+    fecha: str | None = None
     municipio: str
 
 
 class ComparisonResult(BaseModel):
     municipio: str
     fecha: str
-    fuente_aemet: Optional[dict]
+    fuente_aemet: dict | None
     fuente_manual: dict
     discrepancias: dict
     alertas: list

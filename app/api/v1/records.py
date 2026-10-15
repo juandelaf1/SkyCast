@@ -1,42 +1,42 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from pydantic import BaseModel, Field
-from datetime import datetime
-from typing import Optional
 import logging
+from datetime import datetime
 
-from app.db.session import get_db
-from app.db.models import Medicion, Estacion, FuenteDato, Usuario
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
 from app.auth.jwt_auth import get_current_user
 from app.core.validators import validar_registro
+from app.db.models import Estacion, FuenteDato, Medicion, Usuario
+from app.db.session import get_db
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
 class RecordCreate(BaseModel):
-    fecha: Optional[str] = None
+    fecha: str | None = None
     temperatura: float = Field(..., ge=-50, le=60)
     humedad: float = Field(..., ge=0, le=100)
     viento: float = Field(ge=0)
     lluvia: float = Field(ge=0)
-    presion: Optional[float] = Field(None, ge=800, le=1200)
+    presion: float | None = Field(None, ge=800, le=1200)
     estacion_id: int
-    municipio: Optional[str] = None
-    lat: Optional[float] = Field(None, ge=-90, le=90, description="Latitud del reporte (geovalidación)")
-    lon: Optional[float] = Field(None, ge=-180, le=180, description="Longitud del reporte (geovalidación)")
+    municipio: str | None = None
+    lat: float | None = Field(None, ge=-90, le=90, description="Latitud del reporte (geovalidación)")
+    lon: float | None = Field(None, ge=-180, le=180, description="Longitud del reporte (geovalidación)")
 
 
 class RecordResponse(BaseModel):
     id: int
     estacion_id: int
     fecha: datetime
-    temperatura: Optional[float]
-    humedad: Optional[float]
-    viento: Optional[float]
-    lluvia: Optional[float]
-    presion: Optional[float]
+    temperatura: float | None
+    humedad: float | None
+    viento: float | None
+    lluvia: float | None
+    presion: float | None
     fuente: str = "manual"
 
 
@@ -50,8 +50,8 @@ class PaginatedRecords(BaseModel):
 
 @router.get("", response_model=PaginatedRecords)
 def get_records(
-    fecha: Optional[str] = Query(None, description="YYYY-MM-DD"),
-    municipio: Optional[str] = Query(None),
+    fecha: str | None = Query(None, description="YYYY-MM-DD"),
+    municipio: str | None = Query(None),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(50, ge=1, le=200, description="Items per page"),
     db: Session = Depends(get_db),

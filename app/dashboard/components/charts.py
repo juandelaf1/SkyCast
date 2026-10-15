@@ -1,5 +1,5 @@
-import streamlit as st
 import plotly.graph_objects as go
+import streamlit as st
 
 
 def kpi_card(label: str, value: str, delta: str | None = None, icon: str = ""):

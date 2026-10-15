@@ -1,6 +1,7 @@
-import httpx
 import logging
-from typing import Optional
+
+import httpx
+
 from app.config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ class GeolocationService:
         self.nominatim_url = settings.NOMINATIM_URL
         self._cache = {}
 
-    async def get_city_info(self, city: str) -> Optional[dict]:
+    async def get_city_info(self, city: str) -> dict | None:
         cache_key = f"city:{city.lower()}"
         if cache_key in self._cache:
             return self._cache[cache_key]
@@ -48,7 +49,7 @@ class GeolocationService:
             logger.error(f"Error geocoding city: {e}")
             return None
 
-    def get_location_by_ip(self) -> Optional[dict]:
+    def get_location_by_ip(self) -> dict | None:
         try:
             if self._cache.get("ip"):
                 return self._cache["ip"]
@@ -71,7 +72,7 @@ class GeolocationService:
             logger.error(f"Error IP geolocation: {e}")
         return {"lat": 40.4168, "lon": -3.7038, "ciudad": "Unknown", "provincia": "", "pais": "", "fuente": "default"}
 
-    async def reverse_geocode(self, lat: float, lon: float) -> Optional[dict]:
+    async def reverse_geocode(self, lat: float, lon: float) -> dict | None:
         try:
             params = {"lat": lat, "lon": lon, "format": "json"}
             headers = {"User-Agent": "SkyCast-Climate/1.0"}

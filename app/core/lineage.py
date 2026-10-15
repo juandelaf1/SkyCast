@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class LineageLogger:
     def _start(self):
         self.steps.append({
             "step": "init",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "source": self.source,
             "rows_in": 0,
             "rows_out": 0,
@@ -24,7 +24,7 @@ class LineageLogger:
     def log_extract(self, rows_extracted: int, details: str = ""):
         self.steps.append({
             "step": "extract",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "rows_in": 0,
             "rows_out": rows_extracted,
             "rows_discarded": 0,
@@ -37,7 +37,7 @@ class LineageLogger:
     ):
         self.steps.append({
             "step": "transform",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "rows_in": rows_in,
             "rows_out": rows_out,
             "rows_discarded": rows_discarded,
@@ -50,7 +50,7 @@ class LineageLogger:
     ):
         self.steps.append({
             "step": "load",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "rows_in": rows_in,
             "rows_out": rows_loaded,
             "rows_discarded": rows_duplicates,
@@ -70,7 +70,7 @@ class LineageLogger:
         return {
             "source": self.source,
             "started_at": self.steps[0]["timestamp"],
-            "finished_at": datetime.now(timezone.utc).isoformat(),
+            "finished_at": datetime.now(UTC).isoformat(),
             "steps": self.steps,
             "total_rows_loaded": total_loaded,
         }

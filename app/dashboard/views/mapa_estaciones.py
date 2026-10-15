@@ -1,8 +1,8 @@
-import streamlit as st
-import pandas as pd
-import geopandas
 import folium
+import geopandas
+import pandas as pd
 import plotly.express as px
+import streamlit as st
 from streamlit_folium import st_folium
 
 from app.dashboard.views._api import api_get, is_authenticated

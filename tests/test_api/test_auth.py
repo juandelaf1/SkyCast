@@ -71,6 +71,7 @@ class TestAuthAPI:
 
     def test_me_no_auth(self):
         from fastapi.testclient import TestClient
+
         from app.main import app
         app.dependency_overrides.clear()
         c = TestClient(app)

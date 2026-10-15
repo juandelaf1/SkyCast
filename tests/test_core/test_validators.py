@@ -1,4 +1,5 @@
 from datetime import date
+
 from app.core.validators import validar_registro
 
 

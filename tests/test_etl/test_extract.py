@@ -1,6 +1,7 @@
 import json
 import tempfile
 from pathlib import Path
+
 from app.etl.extract import extract_data, extract_from_db
 
 

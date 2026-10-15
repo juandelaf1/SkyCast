@@ -1,12 +1,11 @@
 import json
 import logging
 from pathlib import Path
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def extract_data(file_path: str) -> Optional[list[dict]]:
+def extract_data(file_path: str) -> list[dict] | None:
     try:
         path = Path(file_path)
         if not path.exists():

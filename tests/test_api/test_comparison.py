@@ -1,5 +1,6 @@
-from fastapi.testclient import TestClient
 from datetime import datetime
+
+from fastapi.testclient import TestClient
 
 
 class TestComparisonAPI:
@@ -85,8 +86,9 @@ class TestComparisonAPI:
         assert any("No hay datos AEMET" in a for a in data["alertas"])
 
     def test_comparison_threshold_exceeded_flag(self, client: TestClient, db_session):
-        from app.db.models import Medicion, Estacion, FuenteDato
         from datetime import datetime
+
+        from app.db.models import Estacion, FuenteDato, Medicion
         est = db_session.query(Estacion).first()
         fuente = db_session.query(FuenteDato).filter(FuenteDato.codigo == "aemet").first()
         med = Medicion(estacion_id=est.id, fecha=datetime.now(), temperatura=10.0, humedad=50.0, viento=10.0, lluvia=0.0, fuente_id=fuente.id)
@@ -105,7 +107,7 @@ class TestComparisonAPI:
         assert data["discrepancias"]["temperatura"]["supera_umbral"] is True
 
     def test_comparison_with_aemet_data(self, client: TestClient, db_session):
-        from app.db.models import Medicion, Estacion, FuenteDato
+        from app.db.models import Estacion, FuenteDato, Medicion
         est = db_session.query(Estacion).first()
         fuente = db_session.query(FuenteDato).filter(FuenteDato.codigo == "aemet").first()
         med = Medicion(estacion_id=est.id, fecha=datetime.now(), temperatura=22.0, humedad=50.0, viento=10.0, lluvia=0.0, fuente_id=fuente.id)
@@ -124,7 +126,7 @@ class TestComparisonAPI:
         assert "temperatura" in data["discrepancias"]
 
     def test_comparison_discrepancy_detected(self, client: TestClient, db_session):
-        from app.db.models import Medicion, Estacion, FuenteDato
+        from app.db.models import Estacion, FuenteDato, Medicion
         est = db_session.query(Estacion).first()
         fuente = db_session.query(FuenteDato).filter(FuenteDato.codigo == "aemet").first()
         med = Medicion(estacion_id=est.id, fecha=datetime.now(), temperatura=20.0, humedad=50.0, viento=10.0, lluvia=0.0, fuente_id=fuente.id)

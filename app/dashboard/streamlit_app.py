@@ -1,10 +1,12 @@
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-import streamlit as st
-import httpx
 from datetime import datetime
+
+import httpx
+import streamlit as st
 
 st.set_page_config(
     page_title="SkyCast",
@@ -108,17 +110,16 @@ if page == "Resumen Ejecutivo":
     if "token" not in st.session_state:
         st.info("🔐 Inicia sesión o regístrate para ver datos reales del clima")
         tab_login, tab_register = st.tabs(["Iniciar Sesión", "Registrarse"])
-        with tab_login:
-            with st.form("login_form"):
-                email = st.text_input("Email", placeholder="tu@email.com")
-                password = st.text_input("Contraseña", type="password")
-                if st.form_submit_button("Iniciar Sesión", use_container_width=True):
-                    ok, msg = do_login(email, password)
-                    if ok:
-                        st.success("Sesión iniciada")
-                        st.rerun()
-                    else:
-                        st.error(msg)
+        with tab_login, st.form("login_form"):
+            email = st.text_input("Email", placeholder="tu@email.com")
+            password = st.text_input("Contraseña", type="password")
+            if st.form_submit_button("Iniciar Sesión", use_container_width=True):
+                ok, msg = do_login(email, password)
+                if ok:
+                    st.success("Sesión iniciada")
+                    st.rerun()
+                else:
+                    st.error(msg)
         with tab_register:
             with st.form("register_form"):
                 email_r = st.text_input("Email", placeholder="tu@email.com", key="reg_email")

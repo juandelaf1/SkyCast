@@ -1,5 +1,6 @@
-import streamlit as st
 from datetime import datetime
+
+import streamlit as st
 
 from app.dashboard.views._api import api_get, is_authenticated
 

@@ -1,5 +1,7 @@
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
+
 from app.etl.load import load_data, pd_to_datetime, run_pipeline
 
 
@@ -81,6 +83,7 @@ class TestLoad:
 
     def test_run_pipeline_success(self, db_session, tmp_path):
         import json
+
         from app.db.models import Estacion
         estacion = db_session.query(Estacion).first()
         data = [{
@@ -97,6 +100,7 @@ class TestLoad:
 
     def test_run_pipeline_twice_dedup(self, db_session, tmp_path):
         import json
+
         from app.db.models import Estacion
         estacion = db_session.query(Estacion).first()
         data = [{

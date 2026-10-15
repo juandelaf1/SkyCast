@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
 import logging
+from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.auth.jwt_auth import get_current_user
+from app.db.models import Medicion, Usuario
 from app.db.session import get_db
 from app.services.aemet_service import AemetService
 from app.services.alert_service import AlertService
-from app.auth.jwt_auth import get_current_user
-from app.db.models import Usuario, Medicion
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -22,23 +22,23 @@ class ClimaResponse(BaseModel):
     municipio: str
     provincia: str
     fecha: str
-    temperatura: Optional[float]
-    humedad: Optional[float]
-    viento: Optional[float]
-    lluvia: Optional[float]
-    presion: Optional[float]
+    temperatura: float | None
+    humedad: float | None
+    viento: float | None
+    lluvia: float | None
+    presion: float | None
     alertas: list
-    alerta_nivel: Optional[str]
-    estacion_nombre: Optional[str]
-    estacion_distancia_km: Optional[float]
+    alerta_nivel: str | None
+    estacion_nombre: str | None
+    estacion_distancia_km: float | None
     fuente: str
 
 
 @router.get("", response_model=ClimaResponse)
 async def get_clima(
-    lat: Optional[float] = Query(None, ge=-90, le=90),
-    lon: Optional[float] = Query(None, ge=-180, le=180),
-    ciudad: Optional[str] = Query(None, min_length=1),
+    lat: float | None = Query(None, ge=-90, le=90),
+    lon: float | None = Query(None, ge=-180, le=180),
+    ciudad: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user),
 ):

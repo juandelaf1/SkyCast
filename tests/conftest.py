@@ -1,18 +1,19 @@
 import os
+from datetime import UTC, datetime, timedelta
+
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.hash import pbkdf2_sha256
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from app.db.base import Base
-from app.db.session import get_db
-from app.db.models import Usuario, Zona, Municipio, Estacion, FuenteDato, UmbralAlerta
-from app.main import app
 from app.auth.jwt_auth import get_current_user
 from app.config.settings import settings
+from app.db.base import Base
+from app.db.models import Estacion, FuenteDato, Municipio, UmbralAlerta, Usuario, Zona
+from app.db.session import get_db
+from app.main import app
 
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test_skycast.db")
 _is_postgres = SQLALCHEMY_DATABASE_URL.startswith("postgresql")
@@ -33,7 +34,7 @@ def _create_token(user_id: int, email: str) -> str:
     payload = {
         "sub": email,
         "user_id": user_id,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "exp": datetime.now(UTC) + timedelta(hours=1),
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 

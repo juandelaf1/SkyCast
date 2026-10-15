@@ -1,7 +1,8 @@
-import streamlit as st
+from datetime import datetime, timedelta
+
 import pandas as pd
 import plotly.express as px
-from datetime import datetime, timedelta
+import streamlit as st
 
 from app.dashboard.views._api import api_get, is_authenticated
 

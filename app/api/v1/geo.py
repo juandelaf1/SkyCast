@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
-from typing import Optional
 import logging
 
-from app.services.geolocation_service import GeolocationService
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+
 from app.auth.jwt_auth import get_current_user
 from app.db.models import Usuario
+from app.services.geolocation_service import GeolocationService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -16,8 +16,8 @@ class GeoResponse(BaseModel):
     ciudad: str
     lat: float
     lon: float
-    provincia: Optional[str] = None
-    pais: Optional[str] = None
+    provincia: str | None = None
+    pais: str | None = None
     fuente: str
 
 

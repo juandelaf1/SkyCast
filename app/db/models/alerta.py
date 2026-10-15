@@ -1,7 +1,8 @@
-from app.db.base import Base
-from sqlalchemy import Column, Integer, String, Text, Numeric, ForeignKey, TIMESTAMP
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
+from app.db.base import Base
 
 
 class Alerta(Base):

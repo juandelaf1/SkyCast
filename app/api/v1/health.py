@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from pydantic import BaseModel
-from datetime import datetime
-import time
 import logging
+import time
+from datetime import datetime
 
-from app.db.session import get_db
-from app.db.models import Medicion, Usuario
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
 from app.auth.jwt_auth import get_current_user
+from app.db.models import Medicion, Usuario
+from app.db.session import get_db
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

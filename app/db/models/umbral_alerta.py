@@ -1,5 +1,6 @@
+from sqlalchemy import Column, Integer, Numeric, String, UniqueConstraint
+
 from app.db.base import Base
-from sqlalchemy import Column, Integer, String, Numeric, UniqueConstraint
 
 
 class UmbralAlerta(Base):

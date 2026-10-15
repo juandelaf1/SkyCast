@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
-from app.db.models import Zona, Municipio, Estacion, FuenteDato, UmbralAlerta
+
+from app.db.models import Estacion, FuenteDato, Municipio, UmbralAlerta, Zona
 
 
 def seed_initial_data(db: Session):

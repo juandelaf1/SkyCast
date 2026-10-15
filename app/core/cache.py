@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ class MemoryBackend:
     def __init__(self):
         self._store: dict[str, tuple[float, str]] = {}
 
-    def get(self, key: str) -> Optional[str]:
+    def get(self, key: str) -> str | None:
         item = self._store.get(key)
         if item is None:
             return None
@@ -35,7 +35,7 @@ class RedisBackend:
         import redis.asyncio as aioredis
         self._client = aioredis.from_url(redis_url, decode_responses=True)
 
-    async def get(self, key: str) -> Optional[str]:
+    async def get(self, key: str) -> str | None:
         try:
             return await self._client.get(key)
         except Exception as e:
@@ -62,9 +62,9 @@ class RedisBackend:
 
 
 class CacheService:
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str | None = None):
         self._memory = MemoryBackend()
-        self._redis: Optional[RedisBackend] = None
+        self._redis: RedisBackend | None = None
         if redis_url:
             try:
                 self._redis = RedisBackend(redis_url)
@@ -76,7 +76,7 @@ class CacheService:
     def _make_key(self, prefix: str, key: str) -> str:
         return f"skycast:{prefix}:{key}"
 
-    def get_sync(self, prefix: str, key: str) -> Optional[Any]:
+    def get_sync(self, prefix: str, key: str) -> Any | None:
         cache_key = self._make_key(prefix, key)
         raw = self._memory.get(cache_key)
         if raw is not None:
@@ -94,7 +94,7 @@ class CacheService:
         except (TypeError, ValueError) as e:
             logger.warning(f"Cache serialization error: {e}")
 
-    async def get(self, prefix: str, key: str) -> Optional[Any]:
+    async def get(self, prefix: str, key: str) -> Any | None:
         cache_key = self._make_key(prefix, key)
         raw = self._memory.get(cache_key)
         if raw is not None:

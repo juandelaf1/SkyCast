@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import clima, geo, health, alerts, records, comparison, auth, dashboard
+from app.api.v1 import alerts, auth, clima, comparison, dashboard, geo, health, records
 
 router = APIRouter()
 

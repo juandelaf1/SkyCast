@@ -10,7 +10,7 @@ SkyCast ingests data from 5 sources (AEMET, OpenWeatherMap, AirNOW, Open-Meteo, 
 
 ## Key Results
 
-- **158 automated tests** across ingestion, validation, and API layers
+- **180 automated tests** across ingestion, validation, and API layers
 - **Periodic monitoring** (not real-time) via scheduled ETL
 - **5 data sources** integrated under a unified schema
 - **CI/CD pipeline** with automated testing
