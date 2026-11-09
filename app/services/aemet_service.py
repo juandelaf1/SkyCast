@@ -4,7 +4,7 @@ import logging
 import httpx
 
 from app.config.settings import settings
-from app.core.utils import haversine
+from app.core.utils import haversine, parse_aemet_coordinate
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +81,10 @@ class AemetService:
 
             for est in estaciones:
                 try:
-                    est_lat = float(est.get("latitud", 0))
-                    est_lon = float(est.get("longitud", 0))
+                    est_lat = parse_aemet_coordinate(est.get("latitud"))
+                    est_lon = parse_aemet_coordinate(est.get("longitud"))
+                    if est_lat is None or est_lon is None:
+                        continue
                     dist = haversine(lat, lon, est_lat, est_lon)
                     if dist < min_dist:
                         min_dist = dist
@@ -109,7 +111,7 @@ class AemetService:
 
     async def _fetch_station_data(self, indicativo: str) -> dict | None:
         try:
-            url = f"{self.base_url}/valores/climatologicos/ultimosdatos/{indicativo}"
+            url = f"{self.base_url}/observacion/convencional/datos/estacion/{indicativo}"
             headers = {"api_key": self.api_key}
 
             async with httpx.AsyncClient(timeout=self.timeout) as client:
@@ -119,6 +121,8 @@ class AemetService:
 
                 raw = resp.json()
                 if isinstance(raw, dict):
+                    if raw.get("estado") not in (None, 200, "200"):
+                        return None
                     datos_url = raw.get("datos")
                     if datos_url:
                         resp2 = await client.get(datos_url)
@@ -128,11 +132,13 @@ class AemetService:
                             return None
                     else:
                         return None
-                else:
+                elif isinstance(raw, list):
                     data = raw
+                else:
+                    return None
 
                 if isinstance(data, list) and len(data) > 0:
-                    return self._normalize_aemet_data(data[0])
+                    return self._normalize_aemet_data(data[-1])
                 return None
         except Exception as e:
             logger.error(f"Error fetching station data: {e}")

@@ -27,10 +27,16 @@ def _increment(endpoint: str):
 class HealthResponse(BaseModel):
     status: str = "healthy"
     version: str = "1.0.0"
+    contract_version: str = "skycast-api/0.1"
     timestamp: str
     uptime_seconds: int
     requests_total: int
     requests_by_endpoint: dict
+    capabilities: dict = {
+        "route_weather": True,
+        "validate_observation": True,
+        "openapi": "/docs",
+    }
 
 
 class StatsResponse(BaseModel):

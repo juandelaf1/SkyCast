@@ -1,3 +1,5 @@
+import logging
+import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -48,6 +50,15 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def correlation_id_middleware(request: Request, call_next):
+    cid = request.headers.get("X-Correlation-Id") or request.headers.get("X-Request-Id") or str(uuid.uuid4())
+    request.state.correlation_id = cid
+    response = await call_next(request)
+    response.headers["X-Correlation-Id"] = cid
+    return response
+
+
 @app.get("/", tags=["root"])
 async def root():
     return {
@@ -69,7 +80,6 @@ app.include_router(dashboard.router)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    import logging
     logging.getLogger(__name__).error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
