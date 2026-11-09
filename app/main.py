@@ -1,4 +1,5 @@
 import logging
+import os
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -41,9 +42,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+_cors_origins = [o.strip() for o in os.getenv("SKYCAST_CORS_ORIGINS", "*").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
