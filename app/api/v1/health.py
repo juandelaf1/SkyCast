@@ -57,6 +57,16 @@ async def health_check():
     )
 
 
+@router.get("/ready")
+async def readiness_check(db: Session = Depends(get_db)):
+    """Readiness probe for orchestration (DB connectivity)."""
+    try:
+        db.execute(func.count(Medicion.id)).scalar()
+        return {"ready": True, "database": "connected", "service": "skycast-api"}
+    except Exception as exc:
+        return {"ready": False, "database": "unavailable", "detail": str(exc)}
+
+
 @router.get("/stats", response_model=StatsResponse)
 async def get_stats(
     db: Session = Depends(get_db),
