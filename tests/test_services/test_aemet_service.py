@@ -81,6 +81,8 @@ class TestAemetService:
             },
         }
 
+        # Force fallback path (env may have AEMET_API_KEY configured).
+        self.service.api_key = None
         with patch(
             "app.services.openweather_service.OpenWeatherService.get_weather",
             new_callable=AsyncMock,
