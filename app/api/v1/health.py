@@ -35,7 +35,9 @@ class HealthResponse(BaseModel):
     capabilities: dict = {
         "route_weather": True,
         "validate_observation": True,
-        "openapi": "/docs",
+        "openapi": "/openapi.json",
+        "docs": "/docs",
+        "ready": "/api/v1/health/ready",
     }
 
 
