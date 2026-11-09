@@ -15,15 +15,42 @@ from app.db.models import Estacion, FuenteDato, Municipio, UmbralAlerta, Usuario
 from app.db.session import get_db
 from app.main import app
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test_skycast.db")
-_is_postgres = SQLALCHEMY_DATABASE_URL.startswith("postgresql")
-_connect_args = {"check_same_thread": False} if not _is_postgres else {}
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=_connect_args)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+_is_postgres = bool(SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgresql"))
+
+# Keep module-level attributes for compatibility; tests should use fixtures.
+engine = None
+TestingSessionLocal = None
+
+
+def _make_test_db(tmp_path=None):
+    """Create an isolated engine/session factory.
+
+    - Postgres (explicit DATABASE_URL): shared server, clean schema per test via drop/create.
+    - SQLite (default): unique temp file per test to avoid shared-state/UNIQUE collisions.
+    """
+    global engine, TestingSessionLocal
+    if _is_postgres:
+        url = SQLALCHEMY_DATABASE_URL
+        connect_args = {}
+    else:
+        db_path = (tmp_path / "test_skycast.db") if tmp_path else None
+        url = f"sqlite:///{db_path.as_posix()}" if db_path else "sqlite:///:memory:"
+        connect_args = {"check_same_thread": False}
+    test_engine = create_engine(url, connect_args=connect_args)
+    TestSession = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+    engine = test_engine
+    TestingSessionLocal = TestSession
+    return test_engine, TestSession
 
 
 def override_get_db():
-    db = TestingSessionLocal()
+    """Compatibility dependency; prefers current TestingSessionLocal."""
+    if TestingSessionLocal is None:
+        _, SessionLocal = _make_test_db()
+    else:
+        SessionLocal = TestingSessionLocal
+    db = SessionLocal()
     try:
         yield db
     finally:
@@ -93,13 +120,19 @@ def _seed_data(db):
 
 
 @pytest.fixture(scope="function")
-def db_session():
-    Base.metadata.create_all(bind=engine)
-    db = TestingSessionLocal()
-    _seed_data(db)
-    yield db
-    db.close()
-    Base.metadata.drop_all(bind=engine)
+def db_session(tmp_path):
+    test_engine, TestSession = _make_test_db(tmp_path)
+    # Ensure clean schema (important for shared Postgres / stale state).
+    Base.metadata.drop_all(bind=test_engine)
+    Base.metadata.create_all(bind=test_engine)
+    db = TestSession()
+    try:
+        _seed_data(db)
+        yield db
+    finally:
+        db.close()
+        Base.metadata.drop_all(bind=test_engine)
+        test_engine.dispose()
 
 
 @pytest.fixture(scope="function")
