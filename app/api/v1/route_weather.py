@@ -1,7 +1,8 @@
 import json
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Any, Dict
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -30,6 +31,9 @@ class RouteWeatherRequest(BaseModel):
     destino_lon: float = Field(..., ge=-180, le=180, description="Longitud de destino")
     num_samples: int = Field(5, ge=1, le=MAX_SAMPLES, description="Numero de waypoints a muestrear")
 
+    class Config:
+        extra = "allow"
+
 
 class WaypointWeather(BaseModel):
     lat: float
@@ -54,6 +58,18 @@ class RouteWeatherResponse(BaseModel):
     summary: str = ""
     fuente: str = "desconocida"
     procedencia: str = "observado (aemet/open-meteo por waypoint) + estimado (agregacion/penalizacion)"
+    # Additive ecosystem envelope fields (backward-compatible)
+    capability_id: Optional[str] = "climate.route_weather"
+    correlation_id: Optional[str] = None
+    status: Optional[str] = "ok"
+    data_status: Optional[str] = "estimated"
+    provenance: Optional[Dict[str, Any]] = None
+    result: Optional[Dict[str, Any]] = None
+    warnings: Optional[List[Dict[str, Any]]] = None
+    errors: Optional[List[Dict[str, Any]]] = None
+
+    class Config:
+        extra = "allow"
 
 
 def _classify_alert(temp: Optional[float], precip: Optional[float], wind: Optional[float]) -> tuple[str, str]:
@@ -265,9 +281,14 @@ async def _get_aemet_waypoint(lat: float, lon: float, aemet: AemetService, inven
     )
 
 
+def _parse_route_request(body: Dict[str, Any]) -> Dict[str, Any]:
+    if isinstance(body, dict) and body.get("capability_id") == "climate.route_weather" and isinstance(body.get("payload"), dict):
+        return body["payload"]
+    return body if isinstance(body, dict) else {}
+
+
 @router.post("/route-weather", response_model=RouteWeatherResponse, tags=["Clima por ruta"])
 async def route_weather(
-    req: RouteWeatherRequest,
     request: Request,
     _m2m: object = Depends(require_m2m_if_configured("weather:route")),
     _rl: None = Depends(rate_limit("SKYCAST_M2M_RATE_LIMIT", "120/minute")),
@@ -279,17 +300,25 @@ async def route_weather(
     en cada uno. Útil para EnRuta: permite saber si una ruta de transporte
     atraviesa zonas con riesgo meteorológico antes de aceptar el matching.
     En España, prefiere AEMET cuando hay clave configurada; si no, usa Open-Meteo.
+    Acepta body legacy o envelope ecosystem (payload).
     """
+    raw = await request.json()
+    body = _parse_route_request(raw)
+    req = RouteWeatherRequest(**body)
+    correlation_id = (raw.get("correlation_id") if isinstance(raw, dict) else None) or getattr(request.state, "correlation_id", None) or request.headers.get("X-Correlation-Id") or request.headers.get("X-Request-Id") or str(uuid4())
+
     lat1, lon1 = req.origen_lat, req.origen_lon
     lat2, lon2 = req.destino_lat, req.destino_lon
     num_samples = min(req.num_samples, MAX_SAMPLES)
 
     aemet = AemetService()
     inventory = []
-    if aemet.api_key and all(AemetService._is_spain(lat, lon) for lat, lon in [(lat1, lon1), (lat2, lon2)]):
+    aemet_preferred = bool(aemet.api_key and all(AemetService._is_spain(lat, lon) for lat, lon in [(lat1, lon1), (lat2, lon2)]))
+    if aemet_preferred:
         inventory = await _fetch_aemet_inventory(aemet)
 
     waypoints = []
+    aemet_used = 0
     for i in range(num_samples):
         frac = i / (num_samples - 1) if num_samples > 1 else 0
         lat = lat1 + (lat2 - lat1) * frac
@@ -303,7 +332,11 @@ async def route_weather(
                 logger.warning(f"AEMET waypoint fallo ({lat},{lon}): {e}")
         if wp is None:
             wp = await _get_openmeteo_waypoint(lat, lon)
+        elif wp.fuente == "aemet":
+            aemet_used += 1
         if wp:
+            if getattr(wp, "fuente", None) == "aemet":
+                pass
             waypoints.append(wp)
 
     if not waypoints:
@@ -313,5 +346,19 @@ async def route_weather(
         )
 
     resp = _aggregate_route(waypoints)
-    audit_integration(request, resp.contract_version, "ok", {"hazard": resp.hazard_level})
+    fuentes = {wp.fuente for wp in waypoints}
+    degraded = aemet_preferred and "openmeteo" in fuentes and aemet_used < len(waypoints)
+    warnings = []
+    if degraded:
+        warnings.append({"code": "DEPENDENCY_DEGRADED", "message": "AEMET preferida/no totalmente disponible; se usó fallback parcial o total según waypoint"})
+    resp.capability_id = "climate.route_weather"
+    resp.correlation_id = correlation_id
+    resp.status = "ok"
+    resp.data_status = "estimated"
+    resp.provenance = {"fuentes": sorted(fuentes), "aemet_preferred": aemet_preferred, "aemet_waypoints": aemet_used, "total_waypoints": len(waypoints)}
+    resp.warnings = warnings
+    resp.errors = []
+    core = resp.model_dump(exclude={"result"}) if hasattr(resp, "model_dump") else {k: v for k, v in resp.dict().items() if k != "result"}
+    resp.result = core
+    audit_integration(request, resp.contract_version, "ok", {"hazard": resp.hazard_level, "correlation_id": correlation_id, "degraded": degraded})
     return resp
