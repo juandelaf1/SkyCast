@@ -1,0 +1,31 @@
+# Producción (plantilla genérica) — NO commitear secretos.
+# TLS en edge/reverse proxy. Revisar DATABASE_URL y claves externas.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: skycast-api:${SKYCAST_IMAGE_TAG:-prod}
+    restart: unless-stopped
+    environment:
+      AEMET_API_KEY: ${AEMET_API_KEY:?set-in-secret-manager}
+      SECRET_KEY: ${SECRET_KEY:?set-in-secret-manager}
+      SKYCAST_CORS_ORIGINS: ${SKYCAST_CORS_ORIGINS:?https://tu-dominio}
+      SKYCAST_M2M_KEYS: ${SKYCAST_M2M_KEYS:-}
+      SKYCAST_M2M_REQUIRED: ${SKYCAST_M2M_REQUIRED:-false}
+      SKYCAST_M2M_RATE_LIMIT: ${SKYCAST_M2M_RATE_LIMIT:-120/minute}
+      SKYCAST_AUDIT_FILE: ${SKYCAST_AUDIT_FILE:-/app/data/audit/skycast-audit.jsonl}
+      # DATABASE_URL: ${DATABASE_URL:-}  # prod: Postgres gestionada
+    ports:
+      - "${SKYCAST_PORT:-8000}:8000"
+    volumes:
+      - skycast_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+volumes:
+  skycast_data:
