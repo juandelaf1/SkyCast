@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Any, Dict
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -48,11 +49,28 @@ class ValidationResponse(BaseModel):
     estaciones_cercanas: list[StationMatch]
     nota: str
     procedencia: str = "estimado (validacion cruzada contra estaciones/fuentes; no es medicion directa)"
+    # Additive ecosystem envelope fields (backward-compatible)
+    capability_id: Optional[str] = "climate.validate_observation"
+    correlation_id: Optional[str] = None
+    status: Optional[str] = "ok"
+    data_status: Optional[str] = "estimated"
+    provenance: Optional[Dict[str, Any]] = None
+    result: Optional[Dict[str, Any]] = None
+    warnings: Optional[List[Dict[str, Any]]] = None
+    errors: Optional[List[Dict[str, Any]]] = None
+
+    class Config:
+        extra = "allow"
+
+
+def _parse_validate_request(body: Dict[str, Any]) -> Dict[str, Any]:
+    if isinstance(body, dict) and body.get("capability_id") == "climate.validate_observation" and isinstance(body.get("payload"), dict):
+        return body["payload"]
+    return body if isinstance(body, dict) else {}
 
 
 @router.post("/validate-observation", response_model=ValidationResponse, tags=["Validación"])
 async def validate_observation(
-    report: ObservationReport,
     request: Request,
     _m2m: object = Depends(require_m2m_if_configured("weather:validate")),
     _rl: None = Depends(rate_limit("SKYCAST_M2M_RATE_LIMIT", "120/minute")),
@@ -65,7 +83,13 @@ async def validate_observation(
     con datos oficiales antes de afectar al matching de rutas.
 
     Fuente de temperatura: intenta AEMET primero; si falla, usa Open-Meteo.
+    Acepta body legacy o envelope ecosystem (payload).
     """
+    raw = await request.json()
+    body = _parse_validate_request(raw)
+    report = ObservationReport(**body)
+    correlation_id = (raw.get("correlation_id") if isinstance(raw, dict) else None) or getattr(request.state, "correlation_id", None) or request.headers.get("X-Correlation-Id") or request.headers.get("X-Request-Id") or str(uuid4())
+
     lat, lon = report.lat, report.lon
     temp_reportada = report.temperatura_c
     reporte_texto = (report.reporte or "").lower()
@@ -137,24 +161,37 @@ async def validate_observation(
 
     # --- 3. Calcular confianza ---
     total = len(matches)
+    fuentes = set(m.fuente_temperatura for m in matches if m.fuente_temperatura != "ninguna")
     if total == 0:
         confianza = 0
         valido = False
         nota = "No se encontraron estaciones cercanas para validar el informe."
+        status, data_status = "degraded", "estimated"
+        warnings = [{"code": "DEPENDENCY_DEGRADED", "message": "No nearby stations/sources available for validation"}]
     else:
         confianza = int(round((confirmaciones / total) * 100))
         valido = confirmaciones >= 1
-        fuentes = set(m.fuente_temperatura for m in matches if m.fuente_temperatura != "ninguna")
         fuente_txt = ", ".join(fuentes) if fuentes else "ninguna"
         nota = f"{confirmaciones}/{total} estación(es) cercana(s) confirma(n) el informe (fuentes: {fuente_txt})."
+        status, data_status = "ok", "estimated"
+        warnings = []
 
     resp = ValidationResponse(
         valido=valido,
         confianza=confianza,
         estaciones_cercanas=matches,
         nota=nota,
+        capability_id="climate.validate_observation",
+        correlation_id=correlation_id,
+        status=status,
+        data_status=data_status,
+        provenance={"fuentes": sorted(fuentes), "stations_found": total, "confirmations": confirmaciones},
+        warnings=warnings,
+        errors=[],
     )
-    audit_integration(request, resp.contract_version, "ok", {"valido": valido, "confianza": confianza})
+    core = resp.model_dump(exclude={"result"}) if hasattr(resp, "model_dump") else {k: v for k, v in resp.dict().items() if k != "result"}
+    resp.result = core
+    audit_integration(request, resp.contract_version, "ok", {"valido": valido, "confianza": confianza, "correlation_id": correlation_id})
     return resp
 
 
