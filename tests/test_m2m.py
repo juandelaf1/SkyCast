@@ -41,3 +41,20 @@ def test_route_weather_rejects_wrong_scope(monkeypatch):
     monkeypatch.setenv("SKYCAST_M2M_KEYS", "poolar:secret-test-key:other:scope")
     r = client.post("/api/v1/route-weather", headers={"X-API-Key": "secret-test-key"}, json=PAYLOAD)
     assert r.status_code == 403
+
+
+VALIDATE_PAYLOAD = {"lat": 40.4168, "lon": -3.7038, "reporte": "helada", "temperatura_c": -2}
+
+
+def test_validate_observation_requires_m2m_when_configured(monkeypatch):
+    monkeypatch.setenv("SKYCAST_M2M_REQUIRED", "true")
+    monkeypatch.setenv("SKYCAST_M2M_KEYS", "poolar:secret-test-key:weather:validate")
+    r = client.post("/api/v1/validate-observation", json=VALIDATE_PAYLOAD)
+    assert r.status_code == 401
+
+
+def test_validate_observation_rejects_wrong_scope(monkeypatch):
+    monkeypatch.setenv("SKYCAST_M2M_REQUIRED", "true")
+    monkeypatch.setenv("SKYCAST_M2M_KEYS", "poolar:secret-test-key:weather:route")
+    r = client.post("/api/v1/validate-observation", headers={"X-API-Key": "secret-test-key"}, json=VALIDATE_PAYLOAD)
+    assert r.status_code == 403
