@@ -1,0 +1,6 @@
+{
+  "status_code": 403,
+  "body": {
+    "detail": "insufficient_scope"
+  }
+}

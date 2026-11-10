@@ -35,7 +35,7 @@
   "fuente": "openmeteo",
   "procedencia": "observado (aemet/open-meteo por waypoint) + estimado (agregacion/penalizacion)",
   "capability_id": "climate.route_weather",
-  "correlation_id": "2d07e314-7cee-44b9-bc58-c8fc946b93fd",
+  "correlation_id": "11767ca3-81ca-49fd-9da9-7c0c077cdffb",
   "status": "ok",
   "data_status": "estimated",
   "provenance": {
@@ -83,7 +83,7 @@
     "fuente": "openmeteo",
     "procedencia": "observado (aemet/open-meteo por waypoint) + estimado (agregacion/penalizacion)",
     "capability_id": "climate.route_weather",
-    "correlation_id": "2d07e314-7cee-44b9-bc58-c8fc946b93fd",
+    "correlation_id": "11767ca3-81ca-49fd-9da9-7c0c077cdffb",
     "status": "ok",
     "data_status": "estimated",
     "provenance": {

@@ -15,7 +15,7 @@
   "nota": "1/1 estación(es) cercana(s) confirma(n) el informe (fuentes: openmeteo).",
   "procedencia": "estimado (validacion cruzada contra estaciones/fuentes; no es medicion directa)",
   "capability_id": "climate.validate_observation",
-  "correlation_id": "3b3b6d84-600a-4d41-8912-9fbe0f17902e",
+  "correlation_id": "227a1e32-0193-420c-b32f-76a4cd5bcd5a",
   "status": "ok",
   "data_status": "estimated",
   "provenance": {
@@ -42,7 +42,7 @@
     "nota": "1/1 estación(es) cercana(s) confirma(n) el informe (fuentes: openmeteo).",
     "procedencia": "estimado (validacion cruzada contra estaciones/fuentes; no es medicion directa)",
     "capability_id": "climate.validate_observation",
-    "correlation_id": "3b3b6d84-600a-4d41-8912-9fbe0f17902e",
+    "correlation_id": "227a1e32-0193-420c-b32f-76a4cd5bcd5a",
     "status": "ok",
     "data_status": "estimated",
     "provenance": {

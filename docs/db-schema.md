@@ -1,21 +1,35 @@
-# Esquema de base de datos (estado actual)
+# Esquema de base de datos y migraciones
 
 ## Fuente de verdad
 - **Modelos ORM:** `app/db/models/` (SQLAlchemy) y `app/db/base.py`.
-- **Inicialización actual:** `init_db()` en `app/db/__init__.py` ejecuta `Base.metadata.create_all(bind=engine)` y aplica seed inicial (`app/db/seed.py`). No hay carpeta de migraciones versionadas (p. ej. Alembic) en el estado actual.
+- **Migraciones versionadas:** `alembic/` (`alembic.ini`, `alembic/env.py`, `alembic/versions/`).
+- **Migración inicial (baseline):** `alembic/versions/76df699665bd_initial_schema.py` crea el esquema actual desde metadata.
+
+## Flujo reproducible (recomendado)
+1. Configurar `DATABASE_URL` (por defecto SQLite en `settings`).
+2. Aplicar migraciones:
+   ```bash
+   alembic upgrade head
+   ```
+3. Inicializar datos seed cuando corresponda:
+   ```bash
+   python -m app.db
+   ```
+   `init_db()` intenta aplicar migraciones Alembic si están disponibles y luego ejecuta seed idempotente.
+
+### Bases existentes creadas con `create_all`
+Si la base ya tiene tablas pero no `alembic_version`, marcar baseline sin recrear:
+```bash
+alembic stamp head
+```
+`init_db()` también intenta detectar este caso y estampar `head` antes de continuar.
 
 ## Tablas/modelos principales (referencia)
 `Alerta`, `Estacion`, `FuenteDato`, `Medicion`, `Municipio`, `UmbralAlerta`, `Usuario`, `Zona` (ver `app/db/models/` para columnas, tipos y relaciones).
 
-## Camino de migración recomendado (evolución segura)
-- Para cambios de esquema futuros, introducir **migraciones versionadas** (recomendado: Alembic) con una migración inicial que refleje el estado actual.
-- Mantener `init_db`/`create_all` solo para entornos de bootstrap/test compatibles, o migrar la creación a `alembic upgrade head` según estrategia de despliegue.
-- Todo cambio de esquema debe ir acompañado de pruebas y actualización de esta documentación.
+## Evolución de esquema
+- Crear migraciones para cada cambio: `alembic revision -m "descripcion"` (o `--autogenerate` con revisión manual).
+- Revisar y probar migraciones (`upgrade`/`downgrade`) antes de integrar.
+- Mantener compatibilidad con bootstrap/tests; evitar cambios destructivos no documentados.
+- Actualizar esta documentación y pruebas/contratos afectados.
 
-## Regeneración de referencia (opcional)
-Es posible generar un DDL de referencia desde los metadatos ORM para documentación (sin sustituir migraciones). Ejemplo conceptual:
-```python
-from sqlalchemy.schema import CreateTable
-from app.db.base import Base
-# imprimir CreateTable para cada tabla en Base.metadata.sorted_tables
-```
