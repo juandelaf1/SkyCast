@@ -1,0 +1,112 @@
+{
+  "contract_version": "skycast-route-weather/0.1",
+  "waypoints": [
+    {
+      "lat": 40.4168,
+      "lon": -3.7038,
+      "temperatura_c": 20.0,
+      "precipitacion_mm_h": 0.0,
+      "viento_kmh": 5.0,
+      "visibilidad_km": 10.0,
+      "alerta": "verde",
+      "alerta_desc": "Sin incidencias",
+      "fuente": "openmeteo",
+      "timestamp": "2026-01-01T00:00:00Z",
+      "procedencia": "observado (mock)"
+    },
+    {
+      "lat": 41.3874,
+      "lon": 2.1686000000000005,
+      "temperatura_c": 20.0,
+      "precipitacion_mm_h": 0.0,
+      "viento_kmh": 5.0,
+      "visibilidad_km": 10.0,
+      "alerta": "verde",
+      "alerta_desc": "Sin incidencias",
+      "fuente": "openmeteo",
+      "timestamp": "2026-01-01T00:00:00Z",
+      "procedencia": "observado (mock)"
+    }
+  ],
+  "hazard_level": "verde",
+  "duration_penalty_pct": 0.0,
+  "co2_penalty_pct": 0.0,
+  "summary": "Sin incidencias",
+  "fuente": "openmeteo",
+  "procedencia": "observado (aemet/open-meteo por waypoint) + estimado (agregacion/penalizacion)",
+  "capability_id": "climate.route_weather",
+  "correlation_id": "2d07e314-7cee-44b9-bc58-c8fc946b93fd",
+  "status": "ok",
+  "data_status": "estimated",
+  "provenance": {
+    "fuentes": [
+      "openmeteo"
+    ],
+    "aemet_preferred": true,
+    "aemet_waypoints": 0,
+    "total_waypoints": 2
+  },
+  "result": {
+    "contract_version": "skycast-route-weather/0.1",
+    "waypoints": [
+      {
+        "lat": 40.4168,
+        "lon": -3.7038,
+        "temperatura_c": 20.0,
+        "precipitacion_mm_h": 0.0,
+        "viento_kmh": 5.0,
+        "visibilidad_km": 10.0,
+        "alerta": "verde",
+        "alerta_desc": "Sin incidencias",
+        "fuente": "openmeteo",
+        "timestamp": "2026-01-01T00:00:00Z",
+        "procedencia": "observado (mock)"
+      },
+      {
+        "lat": 41.3874,
+        "lon": 2.1686000000000005,
+        "temperatura_c": 20.0,
+        "precipitacion_mm_h": 0.0,
+        "viento_kmh": 5.0,
+        "visibilidad_km": 10.0,
+        "alerta": "verde",
+        "alerta_desc": "Sin incidencias",
+        "fuente": "openmeteo",
+        "timestamp": "2026-01-01T00:00:00Z",
+        "procedencia": "observado (mock)"
+      }
+    ],
+    "hazard_level": "verde",
+    "duration_penalty_pct": 0.0,
+    "co2_penalty_pct": 0.0,
+    "summary": "Sin incidencias",
+    "fuente": "openmeteo",
+    "procedencia": "observado (aemet/open-meteo por waypoint) + estimado (agregacion/penalizacion)",
+    "capability_id": "climate.route_weather",
+    "correlation_id": "2d07e314-7cee-44b9-bc58-c8fc946b93fd",
+    "status": "ok",
+    "data_status": "estimated",
+    "provenance": {
+      "fuentes": [
+        "openmeteo"
+      ],
+      "aemet_preferred": true,
+      "aemet_waypoints": 0,
+      "total_waypoints": 2
+    },
+    "warnings": [
+      {
+        "code": "DEPENDENCY_DEGRADED",
+        "message": "AEMET preferida/no totalmente disponible; se usó fallback parcial o total según waypoint"
+      }
+    ],
+    "errors": []
+  },
+  "warnings": [
+    {
+      "code": "DEPENDENCY_DEGRADED",
+      "message": "AEMET preferida/no totalmente disponible; se usó fallback parcial o total según waypoint"
+    }
+  ],
+  "errors": []
+}

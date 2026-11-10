@@ -5,7 +5,7 @@ from typing import Optional, List, Any, Dict
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from app.core.audit import audit_integration
 from app.core.m2m import require_m2m_if_configured
@@ -304,7 +304,10 @@ async def route_weather(
     """
     raw = await request.json()
     body = _parse_route_request(raw)
-    req = RouteWeatherRequest(**body)
+    try:
+        req = RouteWeatherRequest(**body)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors())
     correlation_id = (raw.get("correlation_id") if isinstance(raw, dict) else None) or getattr(request.state, "correlation_id", None) or request.headers.get("X-Correlation-Id") or request.headers.get("X-Request-Id") or str(uuid4())
 
     lat1, lon1 = req.origen_lat, req.origen_lon

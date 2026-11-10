@@ -1,0 +1,18 @@
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "contract_version": "skycast-api/0.1",
+  "timestamp": "2026-11-10T10:10:32.780658",
+  "uptime_seconds": 0,
+  "requests_total": 1,
+  "requests_by_endpoint": {
+    "/health": 1
+  },
+  "capabilities": {
+    "route_weather": true,
+    "validate_observation": true,
+    "openapi": "/openapi.json",
+    "docs": "/docs",
+    "ready": "/api/v1/health/ready"
+  }
+}

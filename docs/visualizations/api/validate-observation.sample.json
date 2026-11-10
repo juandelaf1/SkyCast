@@ -1,0 +1,60 @@
+{
+  "contract_version": "skycast-validate-observation/0.1",
+  "valido": true,
+  "confianza": 100,
+  "estaciones_cercanas": [
+    {
+      "id": "0001",
+      "nombre": "Estacion Test",
+      "distancia_km": 1.2,
+      "temperatura_c": -1.0,
+      "confirma_helada": true,
+      "fuente_temperatura": "openmeteo"
+    }
+  ],
+  "nota": "1/1 estación(es) cercana(s) confirma(n) el informe (fuentes: openmeteo).",
+  "procedencia": "estimado (validacion cruzada contra estaciones/fuentes; no es medicion directa)",
+  "capability_id": "climate.validate_observation",
+  "correlation_id": "3b3b6d84-600a-4d41-8912-9fbe0f17902e",
+  "status": "ok",
+  "data_status": "estimated",
+  "provenance": {
+    "fuentes": [
+      "openmeteo"
+    ],
+    "stations_found": 1,
+    "confirmations": 1
+  },
+  "result": {
+    "contract_version": "skycast-validate-observation/0.1",
+    "valido": true,
+    "confianza": 100,
+    "estaciones_cercanas": [
+      {
+        "id": "0001",
+        "nombre": "Estacion Test",
+        "distancia_km": 1.2,
+        "temperatura_c": -1.0,
+        "confirma_helada": true,
+        "fuente_temperatura": "openmeteo"
+      }
+    ],
+    "nota": "1/1 estación(es) cercana(s) confirma(n) el informe (fuentes: openmeteo).",
+    "procedencia": "estimado (validacion cruzada contra estaciones/fuentes; no es medicion directa)",
+    "capability_id": "climate.validate_observation",
+    "correlation_id": "3b3b6d84-600a-4d41-8912-9fbe0f17902e",
+    "status": "ok",
+    "data_status": "estimated",
+    "provenance": {
+      "fuentes": [
+        "openmeteo"
+      ],
+      "stations_found": 1,
+      "confirmations": 1
+    },
+    "warnings": [],
+    "errors": []
+  },
+  "warnings": [],
+  "errors": []
+}
