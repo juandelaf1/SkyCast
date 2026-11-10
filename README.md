@@ -212,12 +212,19 @@ Plantilla de despliegue: `docker-compose.prod.yml`. Revisar `DECISION_LOG.md` y 
 - **Auditoría/secretos avanzados:** rotación, centralización y gestión dependen de la infraestructura.
 - **Material histórico:** el portfolio/case study puede diferir del estado actual; contrastar con `/docs`, `docs/openapi.json`, tests y workflows.
 
+## Status & license
+- **Status:** portfolio/API project with verifiable contracts, operational controls, tests, and reproducible evidence artifacts (see `docs/visualizations/`).
+- **License:** no explicit `LICENSE` file in this repository at the time of writing. Respect third-party/provider terms and data-source licenses where applicable.
+
 ## Documentation & references
 
 - OpenAPI (runtime): `/openapi.json` · Swagger: `/docs` · ReDoc: `/redoc`
-- OpenAPI (repo): [`docs/openapi.json`](docs/openapi.json)
-- Case study (puede describir versión anterior): [juandelaf1.github.io/projects/sky-cast](https://juandelaf1.github.io/projects/sky-cast)
-- Decisiones: `DECISION_LOG.md` (incluir/enlazar solo si existe en la rama objetivo)
+- OpenAPI (repo/snapshot): [`docs/openapi.json`](docs/openapi.json) and [`docs/visualizations/ops/openapi.json`](docs/visualizations/ops/openapi.json)
+- DB schema & migrations: [`docs/db-schema.md`](docs/db-schema.md)
+- Evidence registry: [`docs/visualizations/README.md`](docs/visualizations/README.md)
+- Technical case study: [`docs/case-study.md`](docs/case-study.md)
+- Portfolio case study (puede describir versión anterior): [juandelaf1.github.io/projects/sky-cast](https://juandelaf1.github.io/projects/sky-cast)
+- Decisiones: `DECISION_LOG.md` (si existe en la rama objetivo)
 - CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
 ## Authorship
