@@ -153,3 +153,22 @@ def test_health_ready_contract(client: TestClient):
     assert b2.get("ready") is True
     assert b2.get("database") == "connected"
     assert b2.get("service") == "skycast-api"
+
+
+def test_m2m_route_weather_errors_contract(monkeypatch):
+    _clear_m2m(monkeypatch)
+    monkeypatch.setenv("SKYCAST_M2M_REQUIRED", "true")
+    monkeypatch.setenv("SKYCAST_M2M_KEYS", "callerA:secretA:weather:route")
+    c = TestClient(app)
+
+    # missing credentials
+    r401 = c.post("/api/v1/route-weather", json=ROUTE_PAYLOAD)
+    assert r401.status_code == 401
+
+    # insufficient scope
+    monkeypatch.setenv("SKYCAST_M2M_KEYS", "callerA:secretA:weather:other")
+    r403 = c.post("/api/v1/route-weather", json=ROUTE_PAYLOAD, headers={"X-API-Key": "secretA"})
+    assert r403.status_code == 403
+
+
+

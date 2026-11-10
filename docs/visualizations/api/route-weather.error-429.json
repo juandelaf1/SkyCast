@@ -1,0 +1,6 @@
+{
+  "status_code": 429,
+  "body": {
+    "detail": "rate_limit_exceeded"
+  }
+}
